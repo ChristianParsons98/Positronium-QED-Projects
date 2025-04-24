@@ -1,0 +1,3422 @@
+      double precision function fxn(xx,wgt)
+      implicit double precision (a-z)
+      common/cnsts/pi,zeta2
+      dimension xx(16)
+c Region 1: 0<p+q<1
+c Limits are 0 to 1 for xx(1), xx(2)
+c and -1 to 1 for ut=xx(3)
+      xp = xx(1)
+      xq = xx(2)
+      xr = xx(3)
+      thr = xx(4)
+      phr = xx(5)
+      thq = xx(6)
+      p = xp*(1.d0-xq)
+      q = xp*xq
+      r = xr/(1.-xr)
+c
+c
+      fxx = (fxns(p,q,r,   thr,   phr,   thq)
+     1     + fxns(p,q,r,pi-thr,pi+phr,   thq)
+     1     + fxns(p,q,r,   thr,   phr,pi-thq)
+     1     + fxns(p,q,r,pi-thr,pi+phr,pi-thq))/4.
+c
+c
+      fxn = (2./(pi))*(2./3.)*fxx*xp
+      return
+      end
+c
+c
+c
+c
+c
+c
+      double precision function fxns(p,q,r,thr,phr,thq)
+      implicit double precision (a-z)
+      common/cnsts/pi,zeta2
+      dimension xx(16)
+c
+      ut = dcos(thq)
+      sut = dsqrt(1.-ut*ut)
+      pq = p*q*ut
+      pr = p*r*dcos(thr)
+      qr = q*r*(ut*dcos(thr)+sut*dsin(thr)*dcos(phr))
+      pp = p*p
+      qq = q*q
+      rr = r*r
+      wp = dsqrt(p*p+1.)
+      wq = dsqrt(q*q+1.)
+      wr = dsqrt(r*r+1.)
+      wpr = dsqrt(p*p+r*r+2.*pr+1.)
+      wpq = dsqrt(p*p+q*q+2.*pq+1.)
+      wqr = dsqrt(q*q+r*r-2.*qr+1.)
+      s = dsqrt(p*p+q*q+2.*p*q*ut)
+      ps = p*p*q*q*r*r*dsin(thr)*dsin(thq)*(1+r)**2
+c
+      inta =        -ztra(-p,q,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*q*(-2 - p + q - s)*(-2 - p + q + s)*(-1 - p - wp)*
+     -     (-1 - p + wp)*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*
+     -     (-1 + q - wq)**2*(-1 + q + wq)**2*(-2 - p + q - wpr - wqr)*
+     -     (-2 - p + q - wpr + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztra(-p,2 + p + s,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*r*s*(2 + p - q + s)*(2 + p + q + s)*(-1 - p - wp)*
+     -     (-1 - p + wp)*(-1 - p + r - wpr)*(-1 - p + r + wpr)*
+     -     (1 + p + s - wq)**2*(1 + p + s + wq)**2*(1 + p - r + s - wqr)*
+     -     (1 + p - r + s + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztra(-p,2 + p + s,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*s*(2 + p - q + s)*(2 + p + q + s)*(-1 - p - wp)*(-1 - p + wp)*
+     -     wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*(1 + p + s - wq)**2*
+     -     (1 + p + s + wq)**2*(s - wpr - wqr)*(s - wpr + wqr)*(p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztra(-p,2 + p + s,1 + p + s + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*s*(2 + p - q + s)*(2 + p + q + s)*(-1 - p - wp)*(-1 - p + wp)*
+     -     (1 + p + s - wq)**2*(1 + p + s + wq)**2*wqr*(1 + p - r + s + wqr)*
+     -     (1 + p + r + s + wqr)*(s - wpr + wqr)*(s + wpr + wqr)*
+     -     (p + s + wqr - wr)*(2 + p + s + wqr - wr)*(p + s + wqr + wr)*
+     -     (2 + p + s + wqr + wr)) + 
+     -  ztra(-p,2 + p + s,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*s*(2 + p - q + s)*(2 + p + q + s)*(-1 - p - wp)*(-1 - p + wp)*
+     -     (1 + p + s - wq)**2*(1 + p + s + wq)**2*(2 + p + s - wqr - wr)*
+     -     (2 + p + s + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 - p - wpr + wr)*(-2 - p + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(-p,2 + p + s,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*s*(2 + p - q + s)*(2 + p + q + s)*(-1 - p - wp)*(-1 - p + wp)*
+     -     (1 + p + s - wq)**2*(1 + p + s + wq)**2*(p + s - wqr - wr)*
+     -     (p + s + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*(-p - wpr + wr)*
+     -     (-p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 - p - wp)*(-1 - p + wp)*wpr*(1 + p - r + wpr)*
+     -     (1 + p + r + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 - p - s + wq)*(-1 - p + s + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)**2*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztra(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 - p - wp)*(-1 - p + wp)*wpr*(1 + p - r + wpr)*
+     -     (1 + p + r + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 - p - s + wq)*(-1 - p + s + wq)*(-1 - p - wpr + wq - wqr)**2*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztra(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 - p - wp)*(-1 - p + wp)*wpr*(1 + p - r + wpr)*
+     -     (1 + p + r + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 - p - s + wq)*(-1 - p + s + wq)**2*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztra(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 - p - wp)*(-1 - p + wp)*wpr*(1 + p - r + wpr)*
+     -     (1 + p + r + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 - p - s + wq)**2*(-1 - p + s + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztra(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 - p - wp)*(-1 - p + wp)*wpr*(1 + p - r + wpr)*
+     -     (1 + p + r + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)**2*
+     -     (-1 - p - s + wq)*(-1 - p + s + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztra(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 - p - wp)*(-1 - p + wp)*wpr*(1 + p - r + wpr)*
+     -     (1 + p + r + wpr)*wq**2*(1 - q + wq)**2*(1 + q + wq)*
+     -     (-1 - p - s + wq)*(-1 - p + s + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztra(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 - p - wp)*(-1 - p + wp)*wpr*(1 + p - r + wpr)*
+     -     (1 + p + r + wpr)*wq**3*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 - p - s + wq)*(-1 - p + s + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztra(-p,2 + p + wpr + wqr,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*(-1 - p - wp)*(-1 - p + wp)*wpr*(1 + p - r + wpr)*
+     -     (1 + p + r + wpr)*wqr*(2 + p - q + wpr + wqr)*
+     -     (2 + p + q + wpr + wqr)*(-s + wpr + wqr)*(s + wpr + wqr)*
+     -     (1 + p + wpr - wq + wqr)**2*(1 + p + wpr + wq + wqr)**2*
+     -     (p + wpr - wr)*(2 + p + wpr - wr)*(p + wpr + wr)*(2 + p + wpr + wr)
+     -     ) - ztra(p,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*q*r*(-2 + p + q - s)*(-2 + p + q + s)*(-1 + p - wp)*
+     -     (-1 + p + wp)*(-1 + p + r - wpr)*(-1 + p + r + wpr)*
+     -     (-1 + q - wq)**2*(-1 + q + wq)**2*(-1 + q - r - wqr)*
+     -     (-1 + q - r + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztra(p,q,-1 + q + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*q*(-2 + p + q - s)*(-2 + p + q + s)*(-1 + p - wp)*
+     -     (-1 + p + wp)*(-1 + q - wq)**2*(-1 + q + wq)**2*wqr*
+     -     (-1 + q - r + wqr)*(-1 + q + r + wqr)*(-2 + p + q - wpr + wqr)*
+     -     (-2 + p + q + wpr + wqr)*(-2 + q + wqr - wr)*(q + wqr - wr)*
+     -     (-2 + q + wqr + wr)*(q + wqr + wr)) + 
+     -  ztra(p,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*q*(-2 + p + q - s)*(-2 + p + q + s)*(-1 + p - wp)*
+     -     (-1 + p + wp)*(-1 + q - wq)**2*(-1 + q + wq)**2*(q - wqr - wr)*
+     -     (q + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*(-2 + p - wpr + wr)*
+     -     (-2 + p + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(p,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*q*(-2 + p + q - s)*(-2 + p + q + s)*(-1 + p - wp)*
+     -     (-1 + p + wp)*(-1 + q - wq)**2*(-1 + q + wq)**2*
+     -     (-2 + q - wqr - wr)*(-2 + q + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p - wp)*(-1 + p + wp)*(-1 + p + r - wpr)*
+     -     (-1 + p + r + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)**2*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p - wp)*(-1 + p + wp)*(-1 + p + r - wpr)*
+     -     (-1 + p + r + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(-r + wq - wqr)**2*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p - wp)*(-1 + p + wp)*(-1 + p + r - wpr)*
+     -     (-1 + p + r + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)**2*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p - wp)*(-1 + p + wp)*(-1 + p + r - wpr)*
+     -     (-1 + p + r + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)**2*(-1 + p + s + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p - wp)*(-1 + p + wp)*(-1 + p + r - wpr)*
+     -     (-1 + p + r + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)**2*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p - wp)*(-1 + p + wp)*(-1 + p + r - wpr)*
+     -     (-1 + p + r + wpr)*wq**2*(1 - q + wq)**2*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p - wp)*(-1 + p + wp)*(-1 + p + r - wpr)*
+     -     (-1 + p + r + wpr)*wq**3*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + p - wpr + wq + wqr)*(-1 + p + wpr + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)**2) + 
+     -  ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + p - wpr + wq + wqr)*(-1 + p + wpr + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)**2*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + p - wpr + wq + wqr)*(-1 + p + wpr + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)**2*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + p - wpr + wq + wqr)*(-1 + p + wpr + wq + wqr)*
+     -     (-1 + wq + wqr - wr)**2*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)**2*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + p - wpr + wq + wqr)**2*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)**2*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*wqr*(-r + wq + wqr)**2*
+     -     (r + wq + wqr)*(-1 + p - wpr + wq + wqr)*(-1 + p + wpr + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)**2*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + p - wpr + wq + wqr)*(-1 + p + wpr + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)**2*(-1 + p + s + wq)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + p - wpr + wq + wqr)*(-1 + p + wpr + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)**2*(-1 + p - s + wq)*(-1 + p + s + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)**2*
+     -     (1 + q + wq)*(-1 + p - s + wq)*(-1 + p + s + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**3*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + p - wpr + wq + wqr)*(-1 + p + wpr + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  ztra(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)**2*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(1 + wq - wqr - wr)**2*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)**2*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)**2*(-1 + p + s + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)**2*(-1 + p - s + wq)*(-1 + p + s + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztra(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)**2*
+     -     (1 + q + wq)*(-1 + p - s + wq)*(-1 + p + s + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztra(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**3*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr)) + 
+     -  ztra(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)**2*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(-1 + wq - wqr - wr)**2*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*(p - wpr + wr)*
+     -     (p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)**2*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*(p - wpr + wr)*
+     -     (p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)**2*(-1 + p + s + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*(p - wpr + wr)*
+     -     (p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)**2*(-1 + p - s + wq)*(-1 + p + s + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)**2*
+     -     (1 + q + wq)*(-1 + p - s + wq)*(-1 + p + s + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**3*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*(p - wpr + wr)*
+     -     (p + wpr + wr)*(2 + 2*wr)) - 
+     -  ztra(p,1 + r + wqr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*r*(-1 + p - wp)*(-1 + p + wp)*(-1 + p + r - wpr)*
+     -     (-1 + p + r + wpr)*wqr*(1 - q + r + wqr)*(1 + q + r + wqr)*
+     -     (-1 + p + r - s + wqr)*(-1 + p + r + s + wqr)*(r - wq + wqr)**2*
+     -     (r + wq + wqr)**2*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(p,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wqr*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*
+     -     (-q + wqr + wr)*(q + wqr + wr)*(-2 + p - s + wqr + wr)*
+     -     (-2 + p + s + wqr + wr)*(-1 - wq + wqr + wr)**2*
+     -     (-1 + wq + wqr + wr)**2*(-2 + 2*wr)) - 
+     -  ztra(p,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wqr*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (p - wpr + wr)*(p + wpr + wr)*(2 - q + wqr + wr)*
+     -     (2 + q + wqr + wr)*(p - s + wqr + wr)*(p + s + wqr + wr)*
+     -     (1 - wq + wqr + wr)**2*(1 + wq + wqr + wr)**2*(2 + 2*wr)) - 
+     -  ztra(2 - q - s,q,-1 + q + s + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*(2 - p - q - s)*(2 + p - q - s)*s*(1 - q - s - wp)*
+     -     (1 - q - s + wp)*wpr*(-1 + q - r + s + wpr)*(-1 + q + r + s + wpr)*
+     -     (-1 + q - wq)**2*(-1 + q + wq)**2*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-2 + q + s + wpr - wr)*(q + s + wpr - wr)*
+     -     (-2 + q + s + wpr + wr)*(q + s + wpr + wr)) - 
+     -  ztra(2 - q + s,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*r*s*(2 - p - q + s)*(2 + p - q + s)*(1 - q + s - wp)*
+     -     (1 - q + s + wp)*(1 - q + r + s - wpr)*(1 - q + r + s + wpr)*
+     -     (-1 + q - wq)**2*(-1 + q + wq)**2*(-1 + q - r - wqr)*
+     -     (-1 + q - r + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztra(2 - q + s,q,-1 + q + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*s*(2 - p - q + s)*(2 + p - q + s)*(1 - q + s - wp)*
+     -     (1 - q + s + wp)*(-1 + q - wq)**2*(-1 + q + wq)**2*wqr*
+     -     (-1 + q - r + wqr)*(-1 + q + r + wqr)*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-2 + q + wqr - wr)*(q + wqr - wr)*
+     -     (-2 + q + wqr + wr)*(q + wqr + wr)) + 
+     -  ztra(2 - q + s,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*s*(2 - p - q + s)*(2 + p - q + s)*(1 - q + s - wp)*
+     -     (1 - q + s + wp)*(-1 + q - wq)**2*(-1 + q + wq)**2*(q - wqr - wr)*
+     -     (q + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*(-q + s - wpr + wr)*
+     -     (-q + s + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(2 - q + s,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*s*(2 - p - q + s)*(2 + p - q + s)*(1 - q + s - wp)*
+     -     (1 - q + s + wp)*(-1 + q - wq)**2*(-1 + q + wq)**2*
+     -     (-2 + q - wqr - wr)*(-2 + q + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 - q + s - wpr + wr)*(2 - q + s + wpr + wr)*
+     -     (2 + 2*wr)) - ztra(1 - wp,q,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*(1 - p - wp)*(1 + p - wp)*(-1 + q - s - wp)*(-1 + q + s - wp)*
+     -     wp*wpr*(-r + wp + wpr)*(r + wp + wpr)*(-1 + q - wq)**2*
+     -     (-1 + q + wq)**2*(-1 + q - wp - wpr - wqr)*
+     -     (-1 + q - wp - wpr + wqr)*(-1 + wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (-1 + wp + wpr + wr)*(1 + wp + wpr + wr)) - 
+     -  ztra(1 - wp,1 + s + wp,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*s*(1 - p - wp)*(1 + p - wp)*wp*(1 - q + s + wp)*
+     -     (1 + q + s + wp)*(r - wp - wpr)*(r - wp + wpr)*(s + wp - wq)**2*
+     -     (s + wp + wq)**2*(-r + s + wp - wqr)*(-r + s + wp + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztra(1 - wp,1 + s + wp,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*s*(1 - p - wp)*(1 + p - wp)*wp*(1 - q + s + wp)*(1 + q + s + wp)*
+     -     wpr*(-r + wp + wpr)*(r + wp + wpr)*(s + wp - wq)**2*
+     -     (s + wp + wq)**2*(s - wpr - wqr)*(s - wpr + wqr)*
+     -     (-1 + wp + wpr - wr)*(1 + wp + wpr - wr)*(-1 + wp + wpr + wr)*
+     -     (1 + wp + wpr + wr)) - 
+     -  ztra(1 - wp,1 + s + wp,s + wp + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*s*(1 - p - wp)*(1 + p - wp)*wp*(1 - q + s + wp)*(1 + q + s + wp)*
+     -     (s + wp - wq)**2*(s + wp + wq)**2*wqr*(-r + s + wp + wqr)*
+     -     (r + s + wp + wqr)*(s - wpr + wqr)*(s + wpr + wqr)*
+     -     (-1 + s + wp + wqr - wr)*(1 + s + wp + wqr - wr)*
+     -     (-1 + s + wp + wqr + wr)*(1 + s + wp + wqr + wr)) + 
+     -  ztra(1 - wp,1 + s + wp,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p - wp)*(1 + p - wp)*wp*(1 - q + s + wp)*
+     -     (1 + q + s + wp)*(s + wp - wq)**2*(s + wp + wq)**2*
+     -     (1 + s + wp - wqr - wr)*(1 + s + wp + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-1 - wp - wpr + wr)*(-1 - wp + wpr + wr)*(-2 + 2*wr)
+     -     ) - ztra(1 - wp,1 + s + wp,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p - wp)*(1 + p - wp)*wp*(1 - q + s + wp)*
+     -     (1 + q + s + wp)*(s + wp - wq)**2*(s + wp + wq)**2*
+     -     (-1 + s + wp - wqr - wr)*(-1 + s + wp + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(1 - wp - wpr + wr)*(1 - wp + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(1 - wp,1 + wq,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(1 - p - wp)*(1 + p - wp)*wp*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-s - wp + wq)*(s - wp + wq)*
+     -     (-wp - wpr + wq - wqr)*(-wp - wpr + wq + wqr)**2*
+     -     (-1 + wp + wpr - wr)*(1 + wp + wpr - wr)*(-1 + wp + wpr + wr)*
+     -     (1 + wp + wpr + wr)) + 
+     -  ztra(1 - wp,1 + wq,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(1 - p - wp)*(1 + p - wp)*wp*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-s - wp + wq)*(s - wp + wq)*
+     -     (-wp - wpr + wq - wqr)**2*(-wp - wpr + wq + wqr)*
+     -     (-1 + wp + wpr - wr)*(1 + wp + wpr - wr)*(-1 + wp + wpr + wr)*
+     -     (1 + wp + wpr + wr)) + 
+     -  ztra(1 - wp,1 + wq,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(1 - p - wp)*(1 + p - wp)*wp*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-s - wp + wq)*(s - wp + wq)**2*
+     -     (-wp - wpr + wq - wqr)*(-wp - wpr + wq + wqr)*(-1 + wp + wpr - wr)*
+     -     (1 + wp + wpr - wr)*(-1 + wp + wpr + wr)*(1 + wp + wpr + wr)) + 
+     -  ztra(1 - wp,1 + wq,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(1 - p - wp)*(1 + p - wp)*wp*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-s - wp + wq)**2*(s - wp + wq)*
+     -     (-wp - wpr + wq - wqr)*(-wp - wpr + wq + wqr)*(-1 + wp + wpr - wr)*
+     -     (1 + wp + wpr - wr)*(-1 + wp + wpr + wr)*(1 + wp + wpr + wr)) + 
+     -  ztra(1 - wp,1 + wq,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(1 - p - wp)*(1 + p - wp)*wp*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)**2*(-s - wp + wq)*(s - wp + wq)*
+     -     (-wp - wpr + wq - wqr)*(-wp - wpr + wq + wqr)*(-1 + wp + wpr - wr)*
+     -     (1 + wp + wpr - wr)*(-1 + wp + wpr + wr)*(1 + wp + wpr + wr)) + 
+     -  ztra(1 - wp,1 + wq,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(1 - p - wp)*(1 + p - wp)*wp*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)**2*(1 + q + wq)*(-s - wp + wq)*(s - wp + wq)*
+     -     (-wp - wpr + wq - wqr)*(-wp - wpr + wq + wqr)*(-1 + wp + wpr - wr)*
+     -     (1 + wp + wpr - wr)*(-1 + wp + wpr + wr)*(1 + wp + wpr + wr)) + 
+     -  ztra(1 - wp,1 + wq,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(1 - p - wp)*(1 + p - wp)*wp*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     wq**3*(1 - q + wq)*(1 + q + wq)*(-s - wp + wq)*(s - wp + wq)*
+     -     (-wp - wpr + wq - wqr)*(-wp - wpr + wq + wqr)*(-1 + wp + wpr - wr)*
+     -     (1 + wp + wpr - wr)*(-1 + wp + wpr + wr)*(1 + wp + wpr + wr)) - 
+     -  ztra(1 - wp,1 + wp + wpr + wqr,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*(1 - p - wp)*(1 + p - wp)*wp*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     wqr*(-s + wpr + wqr)*(s + wpr + wqr)*(1 - q + wp + wpr + wqr)*
+     -     (1 + q + wp + wpr + wqr)*(wp + wpr - wq + wqr)**2*
+     -     (wp + wpr + wq + wqr)**2*(-1 + wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (-1 + wp + wpr + wr)*(1 + wp + wpr + wr)) - 
+     -  ztra(1 + wp,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*r*wp*(1 - p + wp)*(1 + p + wp)*(-1 + q - s + wp)*
+     -     (-1 + q + s + wp)*(r + wp - wpr)*(r + wp + wpr)*(-1 + q - wq)**2*
+     -     (-1 + q + wq)**2*(-1 + q - r - wqr)*(-1 + q - r + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztra(1 + wp,q,-1 + q + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*wp*(1 - p + wp)*(1 + p + wp)*(-1 + q - s + wp)*
+     -     (-1 + q + s + wp)*(-1 + q - wq)**2*(-1 + q + wq)**2*wqr*
+     -     (-1 + q - r + wqr)*(-1 + q + r + wqr)*(-1 + q + wp - wpr + wqr)*
+     -     (-1 + q + wp + wpr + wqr)*(-2 + q + wqr - wr)*(q + wqr - wr)*
+     -     (-2 + q + wqr + wr)*(q + wqr + wr)) + 
+     -  ztra(1 + wp,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wp*(1 - p + wp)*(1 + p + wp)*(-1 + q - s + wp)*
+     -     (-1 + q + s + wp)*(-1 + q - wq)**2*(-1 + q + wq)**2*(q - wqr - wr)*
+     -     (q + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*(-1 + wp - wpr + wr)*
+     -     (-1 + wp + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(1 + wp,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wp*(1 - p + wp)*(1 + p + wp)*(-1 + q - s + wp)*
+     -     (-1 + q + s + wp)*(-1 + q - wq)**2*(-1 + q + wq)**2*
+     -     (-2 + q - wqr - wr)*(-2 + q + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(1 + wp - wpr + wr)*(1 + wp + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(1 + wp,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wp*(1 - p + wp)*(1 + p + wp)*(r + wp - wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wp + wq)*(s + wp + wq)*
+     -     (-r + wq - wqr)*(-r + wq + wqr)**2*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + wp,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wp*(1 - p + wp)*(1 + p + wp)*(r + wp - wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wp + wq)*(s + wp + wq)*
+     -     (-r + wq - wqr)**2*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + wp,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wp*(1 - p + wp)*(1 + p + wp)*(r + wp - wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wp + wq)*(s + wp + wq)**2*
+     -     (-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + wp,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wp*(1 - p + wp)*(1 + p + wp)*(r + wp - wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wp + wq)**2*(s + wp + wq)*
+     -     (-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + wp,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wp*(1 - p + wp)*(1 + p + wp)*(r + wp - wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)**2*(-s + wp + wq)*(s + wp + wq)*
+     -     (-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + wp,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wp*(1 - p + wp)*(1 + p + wp)*(r + wp - wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)**2*(1 + q + wq)*(-s + wp + wq)*(s + wp + wq)*
+     -     (-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + wp,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wp*(1 - p + wp)*(1 + p + wp)*(r + wp - wpr)*(r + wp + wpr)*
+     -     wq**3*(1 - q + wq)*(1 + q + wq)*(-s + wp + wq)*(s + wp + wq)*
+     -     (-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)**2) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)**2*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)**2*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*
+     -     (-1 + wq + wqr - wr)**2*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)**2*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)**2*(wp + wpr + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)**2*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)**2*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)**2*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)**2*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)**2*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)**2*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**3*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztra(1 + wp,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)**2*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + wp - wpr + wr)*(-1 + wp + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(1 + wp,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(1 + wq - wqr - wr)**2*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + wp - wpr + wr)*(-1 + wp + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(1 + wp,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)**2*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + wp - wpr + wr)*(-1 + wp + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(1 + wp,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)**2*(s + wp + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + wp - wpr + wr)*(-1 + wp + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(1 + wp,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)**2*
+     -     (-s + wp + wq)*(s + wp + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + wp - wpr + wr)*(-1 + wp + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(1 + wp,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)**2*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + wp - wpr + wr)*(-1 + wp + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra(1 + wp,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**3*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + wp - wpr + wr)*(-1 + wp + wpr + wr)*(-2 + 2*wr)) + 
+     -  ztra(1 + wp,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)**2*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + wp - wpr + wr)*(1 + wp + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(1 + wp,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(-1 + wq - wqr - wr)**2*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + wp - wpr + wr)*(1 + wp + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(1 + wp,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)**2*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + wp - wpr + wr)*(1 + wp + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(1 + wp,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)**2*(s + wp + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + wp - wpr + wr)*(1 + wp + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(1 + wp,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)**2*
+     -     (-s + wp + wq)*(s + wp + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + wp - wpr + wr)*(1 + wp + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(1 + wp,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)**2*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + wp - wpr + wr)*(1 + wp + wpr + wr)*(2 + 2*wr)) + 
+     -  ztra(1 + wp,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**3*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + wp - wpr + wr)*(1 + wp + wpr + wr)*(2 + 2*wr)) - 
+     -  ztra(1 + wp,1 + r + wqr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*wp*(1 - p + wp)*(1 + p + wp)*(r + wp - wpr)*(r + wp + wpr)*wqr*
+     -     (1 - q + r + wqr)*(1 + q + r + wqr)*(r - s + wp + wqr)*
+     -     (r + s + wp + wqr)*(r - wq + wqr)**2*(r + wq + wqr)**2*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + wp,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wqr*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + wp - wpr + wr)*(-1 + wp + wpr + wr)*(-q + wqr + wr)*
+     -     (q + wqr + wr)*(-1 - s + wp + wqr + wr)*(-1 + s + wp + wqr + wr)*
+     -     (-1 - wq + wqr + wr)**2*(-1 + wq + wqr + wr)**2*(-2 + 2*wr)) - 
+     -  ztra(1 + wp,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wqr*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + wp - wpr + wr)*(1 + wp + wpr + wr)*(2 - q + wqr + wr)*
+     -     (2 + q + wqr + wr)*(1 - s + wp + wqr + wr)*(1 + s + wp + wqr + wr)*
+     -     (1 - wq + wqr + wr)**2*(1 + wq + wqr + wr)**2*(2 + 2*wr)) - 
+     -  ztra(1 - r - wpr,1 + r + s + wpr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*s*(1 - p - r - wpr)*(1 + p - r - wpr)*(-r - wp - wpr)*
+     -     (-r + wp - wpr)*wpr*(1 - q + r + s + wpr)*(1 + q + r + s + wpr)*
+     -     (r + s + wpr - wq)**2*(r + s + wpr + wq)**2*(s + wpr - wqr)*
+     -     (s + wpr + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztra(1 - r + wpr,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*
+     -     (-1 + q - r - s + wpr)*(-1 + q - r + s + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*(-1 + q - wq)**2*(-1 + q + wq)**2*
+     -     (-1 + q - r - wqr)*(-1 + q - r + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r - s + wpr + wq)*(-r + s + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)**2*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r - s + wpr + wq)*(-r + s + wpr + wq)*(-r + wq - wqr)**2*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r - s + wpr + wq)*(-r + s + wpr + wq)**2*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r - s + wpr + wq)**2*(-r + s + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)**2*
+     -     (-r - s + wpr + wq)*(-r + s + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*wq**2*(1 - q + wq)**2*(1 + q + wq)*
+     -     (-r - s + wpr + wq)*(-r + s + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*wq**3*(1 - q + wq)*(1 + q + wq)*
+     -     (-r - s + wpr + wq)*(-r + s + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztra(1 - r + wpr,1 + r + wqr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*wqr*(1 - q + r + wqr)*(1 + q + r + wqr)*
+     -     (-s + wpr + wqr)*(s + wpr + wqr)*(r - wq + wqr)**2*
+     -     (r + wq + wqr)**2*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,
+     -    qr)/(16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-r + s + wpr + wq)*
+     -     (r + s + wpr + wq)*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)**2) + 
+     -  ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-r + s + wpr + wq)*
+     -     (r + s + wpr + wq)*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)**2*(1 + s + wpr + wq + wr)) + 
+     -  ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-r + s + wpr + wq)*
+     -     (r + s + wpr + wq)*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)**2*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-r + s + wpr + wq)*
+     -     (r + s + wpr + wq)*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-1 + s + wpr + wq - wr)**2*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-r + s + wpr + wq)*
+     -     (r + s + wpr + wq)**2*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)**2*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)**2*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)**2*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**3*(1 - q + wq)*(1 + q + wq)*(-r + s + wpr + wq)*
+     -     (r + s + wpr + wq)*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) - 
+     -  ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) - 
+     -  ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)**2*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-r + s + wpr + wq)*
+     -     (r + s + wpr + wq)*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) - 
+     -  ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)**2*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-r + s + wpr + wq)*
+     -     (r + s + wpr + wq)*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) - 
+     -  ztra(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)**2*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-r + s + wpr + wq)*
+     -     (r + s + wpr + wq)*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)**2*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)**2*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)**2*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)**2*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**3*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztra(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)**2*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztra(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)*(r + s - wpr - wq)**2*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztra(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)**2*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztra(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)**2*
+     -     (s + wp - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztra(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 - p + s - wq)*(1 + p + s - wq)**2*(s - wp - wq)*
+     -     (s + wp - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztra(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 - p + s - wq)**2*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)**2) + 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)**2*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)**2*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)**2*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)**2*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)**2*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)**2*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)**2*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**3*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (s - wpr + wqr)*(s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)**2*
+     -     (s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)**2*(s - wp - wq)*
+     -     (s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  ztra(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)**2*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)**2*(-2 + 2*wr))\
+     -   + ztra(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)**2*(-1 + s + wpr - wq + wr)*(-2 + 2*wr))\
+     -   - ztra(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)**2*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztra(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)**2*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztra(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)**2*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztra(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)**2*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztra(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**3*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) + 
+     -  ztra(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*
+     -     (-2 + 2*wr)) + ztra(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)**2*
+     -     (s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) + 
+     -  ztra(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)**2*(s - wp - wq)*
+     -     (s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) + 
+     -  ztra(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)**2*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztra(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)**2*(2 + 2*wr)) - 
+     -  ztra(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)**2*(1 + s + wpr - wq + wr)*(2 + 2*wr)) + 
+     -  ztra(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)**2*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) + 
+     -  ztra(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)**2*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) + 
+     -  ztra(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)**2*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) + 
+     -  ztra(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)**2*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) + 
+     -  ztra(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**3*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) - 
+     -  ztra(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*
+     -     (2 + 2*wr)) - ztra(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)**2*
+     -     (s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) - 
+     -  ztra(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)**2*(s - wp - wq)*
+     -     (s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) - 
+     -  ztra(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 - p + s - wq)**2*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) - 
+     -  ztra(1 - r + s - wqr,1 + r + wqr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*s*(1 - p - r + s - wqr)*(1 + p - r + s - wqr)*
+     -     (-r + s - wp - wqr)*(-r + s + wp - wqr)*(s - wpr - wqr)*
+     -     (s + wpr - wqr)*wqr*(1 - q + r + wqr)*(1 + q + r + wqr)*
+     -     (r - wq + wqr)**2*(r + wq + wqr)**2*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) - 
+     -  ztra(2 - q + wpr - wqr,q,-1 + q + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*wpr*(-1 + q - wq)**2*(-1 + q + wq)**2*(2 - p - q + wpr - wqr)*
+     -     (2 + p - q + wpr - wqr)*(-s + wpr - wqr)*(s + wpr - wqr)*
+     -     (1 - q - wp + wpr - wqr)*(1 - q + wp + wpr - wqr)*wqr*
+     -     (-1 + q - r + wqr)*(-1 + q + r + wqr)*(-2 + q + wqr - wr)*
+     -     (q + wqr - wr)*(-2 + q + wqr + wr)*(q + wqr + wr)) + 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)**2) + 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)**2*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)**2*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)**2*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)**2*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)**2*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)**2*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)**2*(wp + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*
+     -     (1 + p + wpr - wq - wqr)**2*(-wp + wpr - wq - wqr)*
+     -     (wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)**2*
+     -     (1 + p + wpr - wq - wqr)*(-wp + wpr - wq - wqr)*
+     -     (wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)**2*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)**2*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**3*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztra(-wpr - wr,2 + s + wpr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(s + wpr - wqr)*(s + wpr + wqr)*(-p - wpr - wr)*
+     -     (p - wpr - wr)*(-1 - wp - wpr - wr)*(-1 + wp - wpr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(2 - q + s + wpr + wr)*
+     -     (2 + q + s + wpr + wr)*(1 + s + wpr - wq + wr)**2*
+     -     (1 + s + wpr + wq + wr)**2*(2 + 2*wr)) + 
+     -  ztra(2 - wpr - wr,s + wpr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*wpr*(s + wpr - wqr)*(s + wpr + wqr)*(2 - p - wpr - wr)*
+     -     (2 + p - wpr - wr)*(1 - wp - wpr - wr)*(1 + wp - wpr - wr)*wr*
+     -     (-1 - r + wr)*(-1 + r + wr)*(-q + s + wpr + wr)*(q + s + wpr + wr)*
+     -     (-1 + s + wpr - wq + wr)**2*(-1 + s + wpr + wq + wr)**2*(-2 + 2*wr)
+     -     ) - ztra(wpr - wr,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wpr*(-1 + q - wq)**2*(-1 + q + wq)**2*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-2 + q - s + wpr - wr)*(-2 + q + s + wpr - wr)*
+     -     (-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*(-2 + q - wqr - wr)*
+     -     (-2 + q + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*(2 + 2*wr)) + 
+     -  ztra(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*
+     -     (-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)**2*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) + 
+     -  ztra(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*
+     -     (-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-1 + wq - wqr - wr)**2*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) + 
+     -  ztra(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*
+     -     (-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)**2*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) + 
+     -  ztra(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*
+     -     (-1 - s + wpr + wq - wr)**2*(-1 + s + wpr + wq - wr)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) + 
+     -  ztra(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)**2*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*
+     -     (-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) + 
+     -  ztra(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)**2*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*
+     -     (-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) + 
+     -  ztra(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**3*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*
+     -     (-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) - 
+     -  ztra(wpr - wr,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wqr*(-s + wpr + wqr)*(s + wpr + wqr)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(2 - q + wqr + wr)*(2 + q + wqr + wr)*
+     -     (1 - wq + wqr + wr)**2*(1 + wq + wqr + wr)**2*(2 + 2*wr)) + 
+     -  ztra(2 + wpr - wr,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wpr*(-1 + q - wq)**2*(-1 + q + wq)**2*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(q - s + wpr - wr)*(q + s + wpr - wr)*
+     -     (1 - wp + wpr - wr)*(1 + wp + wpr - wr)*(q - wqr - wr)*
+     -     (q + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztra(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)**2*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztra(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)**2*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztra(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)**2*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztra(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (1 - s + wpr + wq - wr)**2*(1 + s + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztra(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)**2*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztra(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)**2*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztra(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**3*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) + 
+     -  ztra(2 + wpr - wr,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wqr*(-s + wpr + wqr)*(s + wpr + wqr)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - wp + wpr - wr)*(1 + wp + wpr - wr)*wr*
+     -     (-1 - r + wr)*(-1 + r + wr)*(-q + wqr + wr)*(q + wqr + wr)*
+     -     (-1 - wq + wqr + wr)**2*(-1 + wq + wqr + wr)**2*(-2 + 2*wr)) - 
+     -  ztra(s - wqr - wr,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(s - wpr - wqr)*(s + wpr - wqr)*wqr*(-p + s - wqr - wr)*
+     -     (p + s - wqr - wr)*(-1 + s - wp - wqr - wr)*
+     -     (-1 + s + wp - wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (2 - q + wqr + wr)*(2 + q + wqr + wr)*(1 - wq + wqr + wr)**2*
+     -     (1 + wq + wqr + wr)**2*(2 + 2*wr)) + 
+     -  ztra(2 + s - wqr - wr,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(s - wpr - wqr)*(s + wpr - wqr)*wqr*(2 - p + s - wqr - wr)*
+     -     (2 + p + s - wqr - wr)*(1 + s - wp - wqr - wr)*
+     -     (1 + s + wp - wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-q + wqr + wr)*(q + wqr + wr)*(-1 - wq + wqr + wr)**2*
+     -     (-1 + wq + wqr + wr)**2*(-2 + 2*wr)) - 
+     -  ztra001(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + p - wpr + wq + wqr)*(-1 + p + wpr + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  ztra001(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztra001(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  ztra010(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 - p - wp)*(-1 - p + wp)*wpr*(1 + p - r + wpr)*
+     -     (1 + p + r + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 - p - s + wq)*(-1 - p + s + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztra010(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p - wp)*(-1 + p + wp)*(-1 + p + r - wpr)*
+     -     (-1 + p + r + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztra010(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + p - wpr + wq + wqr)*(-1 + p + wpr + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztra010(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra010(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*(-1 + p - wp)*(-1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*(p - wpr + wr)*
+     -     (p + wpr + wr)*(2 + 2*wr)) - 
+     -  ztra010(1 - wp,1 + wq,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(1 - p - wp)*(1 + p - wp)*wp*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-s - wp + wq)*(s - wp + wq)*
+     -     (-wp - wpr + wq - wqr)*(-wp - wpr + wq + wqr)*(-1 + wp + wpr - wr)*
+     -     (1 + wp + wpr - wr)*(-1 + wp + wpr + wr)*(1 + wp + wpr + wr)) - 
+     -  ztra010(1 + wp,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wp*(1 - p + wp)*(1 + p + wp)*(r + wp - wpr)*(r + wp + wpr)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wp + wq)*(s + wp + wq)*
+     -     (-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) - 
+     -  ztra010(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztra010(1 + wp,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + wp - wpr + wr)*(-1 + wp + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztra010(1 + wp,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wp*(1 - p + wp)*(1 + p + wp)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + wp - wpr + wr)*(1 + wp + wpr + wr)*(2 + 2*wr)) - 
+     -  ztra010(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r - s + wpr + wq)*(-r + s + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztra010(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,
+     -    pr,qr)/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-r + s + wpr + wq)*
+     -     (r + s + wpr + wq)*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) - 
+     -  ztra010(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztra010(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*
+     -     (-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) + 
+     -  ztra010(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  (ztra001(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr) - 
+     -     ztra100(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr))/
+     -   (16.*s*wpr*(1 - p - s - wq)*(1 + p - s - wq)*(-s - wp - wq)*
+     -     (-s + wp - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(-r + s + wpr + wq)*
+     -     (r + s + wpr + wq)*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  (-ztra010(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr) + 
+     -     ztra100(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr))/
+     -   (16.*r*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*
+     -     (s + wp - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  (ztra010(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr) - 
+     -     ztra100(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr))/
+     -   (16.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  (-ztra010(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr) + 
+     -     ztra100(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr))/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) + 
+     -  (-ztra010(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr) + 
+     -     ztra100(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr))/
+     -   (32.*s*(1 - p + s - wq)*(1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) - 
+     -  (ztra001(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr) - 
+     -     ztra100(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr))/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr))
+c
+      intb =        -ztrb(-p,q,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*q*(-2 - p + q - s)*(-2 - p + q + s)*(-1 - p + q - wpq)*
+     -     (-1 - p + q + wpq)*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*
+     -     (-1 + q - wq)**2*(-1 + q + wq)**2*(-2 - p + q - wpr - wqr)*
+     -     (-2 - p + q - wpr + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztrb(-p,2 + p + s,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*r*s*(2 + p - q + s)*(2 + p + q + s)*(1 + s - wpq)*
+     -     (1 + s + wpq)*(-1 - p + r - wpr)*(-1 - p + r + wpr)*
+     -     (1 + p + s - wq)**2*(1 + p + s + wq)**2*(1 + p - r + s - wqr)*
+     -     (1 + p - r + s + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrb(-p,2 + p + s,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*s*(2 + p - q + s)*(2 + p + q + s)*(1 + s - wpq)*(1 + s + wpq)*
+     -     wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*(1 + p + s - wq)**2*
+     -     (1 + p + s + wq)**2*(s - wpr - wqr)*(s - wpr + wqr)*(p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztrb(-p,2 + p + s,1 + p + s + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*s*(2 + p - q + s)*(2 + p + q + s)*(1 + s - wpq)*(1 + s + wpq)*
+     -     (1 + p + s - wq)**2*(1 + p + s + wq)**2*wqr*(1 + p - r + s + wqr)*
+     -     (1 + p + r + s + wqr)*(s - wpr + wqr)*(s + wpr + wqr)*
+     -     (p + s + wqr - wr)*(2 + p + s + wqr - wr)*(p + s + wqr + wr)*
+     -     (2 + p + s + wqr + wr)) + 
+     -  ztrb(-p,2 + p + s,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*s*(2 + p - q + s)*(2 + p + q + s)*(1 + s - wpq)*(1 + s + wpq)*
+     -     (1 + p + s - wq)**2*(1 + p + s + wq)**2*(2 + p + s - wqr - wr)*
+     -     (2 + p + s + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 - p - wpr + wr)*(-2 - p + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztrb(-p,2 + p + s,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*s*(2 + p - q + s)*(2 + p + q + s)*(1 + s - wpq)*(1 + s + wpq)*
+     -     (1 + p + s - wq)**2*(1 + p + s + wq)**2*(p + s - wqr - wr)*
+     -     (p + s + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*(-p - wpr + wr)*
+     -     (-p + wpr + wr)*(2 + 2*wr)) - 
+     -  ztrb(-p,1 + p + wpq,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*r*wpq*(1 + p - q + wpq)*(1 + p + q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*(-1 - p + r - wpr)*(-1 - p + r + wpr)*
+     -     (p + wpq - wq)**2*(p + wpq + wq)**2*(p - r + wpq - wqr)*
+     -     (p - r + wpq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrb(-p,1 + p + wpq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*wpq*(1 + p - q + wpq)*(1 + p + q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*
+     -     (p + wpq - wq)**2*(p + wpq + wq)**2*(-1 + wpq - wpr - wqr)*
+     -     (-1 + wpq - wpr + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztrb(-p,1 + p + wpq,p + wpq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*wpq*(1 + p - q + wpq)*(1 + p + q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*(p + wpq - wq)**2*(p + wpq + wq)**2*wqr*
+     -     (p - r + wpq + wqr)*(p + r + wpq + wqr)*(-1 + wpq - wpr + wqr)*
+     -     (-1 + wpq + wpr + wqr)*(-1 + p + wpq + wqr - wr)*
+     -     (1 + p + wpq + wqr - wr)*(-1 + p + wpq + wqr + wr)*
+     -     (1 + p + wpq + wqr + wr)) + 
+     -  ztrb(-p,1 + p + wpq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wpq*(1 + p - q + wpq)*(1 + p + q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*(p + wpq - wq)**2*(p + wpq + wq)**2*
+     -     (1 + p + wpq - wqr - wr)*(1 + p + wpq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 - p - wpr + wr)*(-2 - p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrb(-p,1 + p + wpq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wpq*(1 + p - q + wpq)*(1 + p + q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*(p + wpq - wq)**2*(p + wpq + wq)**2*
+     -     (-1 + p + wpq - wqr - wr)*(-1 + p + wpq + wqr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(-p - wpr + wr)*(-p + wpr + wr)*
+     -     (2 + 2*wr)) + ztrb(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 - p - s + wq)*(-1 - p + s + wq)*(-p - wpq + wq)*
+     -     (-p + wpq + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)**2*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztrb(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 - p - s + wq)*(-1 - p + s + wq)*(-p - wpq + wq)*
+     -     (-p + wpq + wq)*(-1 - p - wpr + wq - wqr)**2*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztrb(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 - p - s + wq)*(-1 - p + s + wq)*(-p - wpq + wq)*
+     -     (-p + wpq + wq)**2*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztrb(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 - p - s + wq)*(-1 - p + s + wq)*
+     -     (-p - wpq + wq)**2*(-p + wpq + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztrb(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 - p - s + wq)*(-1 - p + s + wq)**2*
+     -     (-p - wpq + wq)*(-p + wpq + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztrb(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 - p - s + wq)**2*(-1 - p + s + wq)*
+     -     (-p - wpq + wq)*(-p + wpq + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztrb(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)**2*(-1 - p - s + wq)*(-1 - p + s + wq)*
+     -     (-p - wpq + wq)*(-p + wpq + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztrb(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*wq**2*(1 - q + wq)**2*
+     -     (1 + q + wq)*(-1 - p - s + wq)*(-1 - p + s + wq)*(-p - wpq + wq)*
+     -     (-p + wpq + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) + 
+     -  ztrb(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*wq**3*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 - p - s + wq)*(-1 - p + s + wq)*(-p - wpq + wq)*
+     -     (-p + wpq + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztrb(-p,2 + p + wpr + wqr,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*wqr*
+     -     (2 + p - q + wpr + wqr)*(2 + p + q + wpr + wqr)*(-s + wpr + wqr)*
+     -     (s + wpr + wqr)*(1 - wpq + wpr + wqr)*(1 + wpq + wpr + wqr)*
+     -     (1 + p + wpr - wq + wqr)**2*(1 + p + wpr + wq + wqr)**2*
+     -     (p + wpr - wr)*(2 + p + wpr - wr)*(p + wpr + wr)*(2 + p + wpr + wr)
+     -     ) - ztrb(p,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*q*r*(-2 + p + q - s)*(-2 + p + q + s)*(-1 + p + q - wpq)*
+     -     (-1 + p + q + wpq)*(-1 + p + r - wpr)*(-1 + p + r + wpr)*
+     -     (-1 + q - wq)**2*(-1 + q + wq)**2*(-1 + q - r - wqr)*
+     -     (-1 + q - r + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrb(p,q,-1 + q + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*q*(-2 + p + q - s)*(-2 + p + q + s)*(-1 + p + q - wpq)*
+     -     (-1 + p + q + wpq)*(-1 + q - wq)**2*(-1 + q + wq)**2*wqr*
+     -     (-1 + q - r + wqr)*(-1 + q + r + wqr)*(-2 + p + q - wpr + wqr)*
+     -     (-2 + p + q + wpr + wqr)*(-2 + q + wqr - wr)*(q + wqr - wr)*
+     -     (-2 + q + wqr + wr)*(q + wqr + wr)) + 
+     -  ztrb(p,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*q*(-2 + p + q - s)*(-2 + p + q + s)*(-1 + p + q - wpq)*
+     -     (-1 + p + q + wpq)*(-1 + q - wq)**2*(-1 + q + wq)**2*
+     -     (q - wqr - wr)*(q + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztrb(p,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*q*(-2 + p + q - s)*(-2 + p + q + s)*(-1 + p + q - wpq)*
+     -     (-1 + p + q + wpq)*(-1 + q - wq)**2*(-1 + q + wq)**2*
+     -     (-2 + q - wqr - wr)*(-2 + q + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztrb(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p + r - wpr)*(-1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 + p - s + wq)*(-1 + p + s + wq)*(p - wpq + wq)*
+     -     (p + wpq + wq)*(-r + wq - wqr)*(-r + wq + wqr)**2*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p + r - wpr)*(-1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 + p - s + wq)*(-1 + p + s + wq)*(p - wpq + wq)*
+     -     (p + wpq + wq)*(-r + wq - wqr)**2*(-r + wq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p + r - wpr)*(-1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 + p - s + wq)*(-1 + p + s + wq)*(p - wpq + wq)*
+     -     (p + wpq + wq)**2*(-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p + r - wpr)*(-1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 + p - s + wq)*(-1 + p + s + wq)*(p - wpq + wq)**2*
+     -     (p + wpq + wq)*(-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p + r - wpr)*(-1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 + p - s + wq)*(-1 + p + s + wq)**2*(p - wpq + wq)*
+     -     (p + wpq + wq)*(-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p + r - wpr)*(-1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 + p - s + wq)**2*(-1 + p + s + wq)*(p - wpq + wq)*
+     -     (p + wpq + wq)*(-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p + r - wpr)*(-1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)**2*(-1 + p - s + wq)*(-1 + p + s + wq)*(p - wpq + wq)*
+     -     (p + wpq + wq)*(-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p + r - wpr)*(-1 + p + r + wpr)*wq**2*(1 - q + wq)**2*
+     -     (1 + q + wq)*(-1 + p - s + wq)*(-1 + p + s + wq)*(p - wpq + wq)*
+     -     (p + wpq + wq)*(-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p + r - wpr)*(-1 + p + r + wpr)*wq**3*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 + p - s + wq)*(-1 + p + s + wq)*(p - wpq + wq)*
+     -     (p + wpq + wq)*(-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)**2) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)**2*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)**2*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)**2*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)**2*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)**2*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)**2*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)**2*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)**2*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)**2*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)**2*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)**2*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)**2*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)**2*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**3*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztrb(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)**2*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrb(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (1 + wq - wqr - wr)**2*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrb(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)**2*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrb(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)**2*(p + wpq + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrb(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)**2*(p - wpq + wq)*(p + wpq + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrb(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)**2*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrb(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)**2*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrb(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)**2*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrb(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**3*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   + ztrb(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)**2*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztrb(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (-1 + wq - wqr - wr)**2*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztrb(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)**2*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztrb(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)**2*(p + wpq + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztrb(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)**2*(p - wpq + wq)*(p + wpq + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztrb(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)**2*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztrb(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)**2*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztrb(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)**2*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) + 
+     -  ztrb(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**3*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) - 
+     -  ztrb(p,1 + r + wqr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*r*(-1 + p + r - wpr)*(-1 + p + r + wpr)*wqr*(1 - q + r + wqr)*
+     -     (1 + q + r + wqr)*(-1 + p + r - s + wqr)*(-1 + p + r + s + wqr)*
+     -     (p + r - wpq + wqr)*(p + r + wpq + wqr)*(r - wq + wqr)**2*
+     -     (r + wq + wqr)**2*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztrb(p,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wqr*wr*(-1 - r + wr)*(-1 + r + wr)*(-2 + p - wpr + wr)*
+     -     (-2 + p + wpr + wr)*(-q + wqr + wr)*(q + wqr + wr)*
+     -     (-2 + p - s + wqr + wr)*(-2 + p + s + wqr + wr)*
+     -     (-1 + p - wpq + wqr + wr)*(-1 + p + wpq + wqr + wr)*
+     -     (-1 - wq + wqr + wr)**2*(-1 + wq + wqr + wr)**2*(-2 + 2*wr)) - 
+     -  ztrb(p,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wqr*wr*(1 - r + wr)*(1 + r + wr)*(p - wpr + wr)*
+     -     (p + wpr + wr)*(2 - q + wqr + wr)*(2 + q + wqr + wr)*
+     -     (p - s + wqr + wr)*(p + s + wqr + wr)*(1 + p - wpq + wqr + wr)*
+     -     (1 + p + wpq + wqr + wr)*(1 - wq + wqr + wr)**2*
+     -     (1 + wq + wqr + wr)**2*(2 + 2*wr)) - 
+     -  ztrb(2 - q - s,q,-1 + q + s + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*(2 - p - q - s)*(2 + p - q - s)*s*(1 - s - wpq)*(1 - s + wpq)*
+     -     wpr*(-1 + q - r + s + wpr)*(-1 + q + r + s + wpr)*(-1 + q - wq)**2*
+     -     (-1 + q + wq)**2*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-2 + q + s + wpr - wr)*(q + s + wpr - wr)*(-2 + q + s + wpr + wr)*
+     -     (q + s + wpr + wr)) - 
+     -  ztrb(2 - q + s,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*r*s*(2 - p - q + s)*(2 + p - q + s)*(1 + s - wpq)*
+     -     (1 + s + wpq)*(1 - q + r + s - wpr)*(1 - q + r + s + wpr)*
+     -     (-1 + q - wq)**2*(-1 + q + wq)**2*(-1 + q - r - wqr)*
+     -     (-1 + q - r + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrb(2 - q + s,q,-1 + q + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*s*(2 - p - q + s)*(2 + p - q + s)*(1 + s - wpq)*(1 + s + wpq)*
+     -     (-1 + q - wq)**2*(-1 + q + wq)**2*wqr*(-1 + q - r + wqr)*
+     -     (-1 + q + r + wqr)*(s - wpr + wqr)*(s + wpr + wqr)*
+     -     (-2 + q + wqr - wr)*(q + wqr - wr)*(-2 + q + wqr + wr)*
+     -     (q + wqr + wr)) + ztrb(2 - q + s,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*s*(2 - p - q + s)*(2 + p - q + s)*(1 + s - wpq)*(1 + s + wpq)*
+     -     (-1 + q - wq)**2*(-1 + q + wq)**2*(q - wqr - wr)*(q + wqr - wr)*wr*
+     -     (-1 - r + wr)*(-1 + r + wr)*(-q + s - wpr + wr)*
+     -     (-q + s + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztrb(2 - q + s,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*s*(2 - p - q + s)*(2 + p - q + s)*(1 + s - wpq)*(1 + s + wpq)*
+     -     (-1 + q - wq)**2*(-1 + q + wq)**2*(-2 + q - wqr - wr)*
+     -     (-2 + q + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (2 - q + s - wpr + wr)*(2 - q + s + wpr + wr)*(2 + 2*wr)) - 
+     -  ztrb(1 - q - wpq,q,q + wpq + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*(1 - p - q - wpq)*(1 + p - q - wpq)*(-1 - s - wpq)*
+     -     (-1 + s - wpq)*wpq*wpr*(q - r + wpq + wpr)*(q + r + wpq + wpr)*
+     -     (-1 + q - wq)**2*(-1 + q + wq)**2*(-1 - wpq - wpr - wqr)*
+     -     (-1 - wpq - wpr + wqr)*(-1 + q + wpq + wpr - wr)*
+     -     (1 + q + wpq + wpr - wr)*(-1 + q + wpq + wpr + wr)*
+     -     (1 + q + wpq + wpr + wr)) - 
+     -  ztrb(1 - q + wpq,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*r*wpq*(1 - p - q + wpq)*(1 + p - q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*(-q + r + wpq - wpr)*(-q + r + wpq + wpr)*
+     -     (-1 + q - wq)**2*(-1 + q + wq)**2*(-1 + q - r - wqr)*
+     -     (-1 + q - r + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrb(1 - q + wpq,q,-1 + q + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*wpq*(1 - p - q + wpq)*(1 + p - q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*(-1 + q - wq)**2*(-1 + q + wq)**2*wqr*
+     -     (-1 + q - r + wqr)*(-1 + q + r + wqr)*(-1 + wpq - wpr + wqr)*
+     -     (-1 + wpq + wpr + wqr)*(-2 + q + wqr - wr)*(q + wqr - wr)*
+     -     (-2 + q + wqr + wr)*(q + wqr + wr)) + 
+     -  ztrb(1 - q + wpq,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wpq*(1 - p - q + wpq)*(1 + p - q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*(-1 + q - wq)**2*(-1 + q + wq)**2*(q - wqr - wr)*
+     -     (q + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 - q + wpq - wpr + wr)*(-1 - q + wpq + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztrb(1 - q + wpq,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wpq*(1 - p - q + wpq)*(1 + p - q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*(-1 + q - wq)**2*(-1 + q + wq)**2*
+     -     (-2 + q - wqr - wr)*(-2 + q + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(1 - q + wpq - wpr + wr)*(1 - q + wpq + wpr + wr)*
+     -     (2 + 2*wr)) - ztrb(1 - r - wpr,1 + r + s + wpr,r,pp,qq,rr,pq,pr,
+     -    qr)/(8.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p - r - wpr)*
+     -     (1 + p - r - wpr)*wpr*(1 - q + r + s + wpr)*(1 + q + r + s + wpr)*
+     -     (r + s + wpr - wq)**2*(r + s + wpr + wq)**2*(s + wpr - wqr)*
+     -     (s + wpr + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrb(1 - r - wpr,r + wpq + wpr,r,pp,qq,rr,pq,pr,
+     -    qr)/(8.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(1 - p - r - wpr)*
+     -     (1 + p - r - wpr)*wpr*(-q + r + wpq + wpr)*(q + r + wpq + wpr)*
+     -     (-1 + r + wpq + wpr - wq)**2*(-1 + r + wpq + wpr + wq)**2*
+     -     (-1 + wpq + wpr - wqr)*(-1 + wpq + wpr + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrb(1 - r + wpr,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*
+     -     (-1 + q - r - s + wpr)*(-1 + q - r + s + wpr)*(q - r - wpq + wpr)*
+     -     (q - r + wpq + wpr)*(-1 + q - wq)**2*(-1 + q + wq)**2*
+     -     (-1 + q - r - wqr)*(-1 + q - r + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-r - s + wpr + wq)*(-r + s + wpr + wq)*
+     -     (1 - r - wpq + wpr + wq)*(1 - r + wpq + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)**2*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztrb(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-r - s + wpr + wq)*(-r + s + wpr + wq)*
+     -     (1 - r - wpq + wpr + wq)*(1 - r + wpq + wpr + wq)*
+     -     (-r + wq - wqr)**2*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-r - s + wpr + wq)*(-r + s + wpr + wq)*
+     -     (1 - r - wpq + wpr + wq)*(1 - r + wpq + wpr + wq)**2*
+     -     (-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-r - s + wpr + wq)*(-r + s + wpr + wq)*
+     -     (1 - r - wpq + wpr + wq)**2*(1 - r + wpq + wpr + wq)*
+     -     (-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-r - s + wpr + wq)*(-r + s + wpr + wq)**2*
+     -     (1 - r - wpq + wpr + wq)*(1 - r + wpq + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztrb(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-r - s + wpr + wq)**2*(-r + s + wpr + wq)*
+     -     (1 - r - wpq + wpr + wq)*(1 - r + wpq + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztrb(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)**2*(-r - s + wpr + wq)*(-r + s + wpr + wq)*
+     -     (1 - r - wpq + wpr + wq)*(1 - r + wpq + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztrb(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*wq**2*(1 - q + wq)**2*
+     -     (1 + q + wq)*(-r - s + wpr + wq)*(-r + s + wpr + wq)*
+     -     (1 - r - wpq + wpr + wq)*(1 - r + wpq + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztrb(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*wq**3*(1 - q + wq)*
+     -     (1 + q + wq)*(-r - s + wpr + wq)*(-r + s + wpr + wq)*
+     -     (1 - r - wpq + wpr + wq)*(1 - r + wpq + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrb(1 - r + wpr,1 + r + wqr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*wqr*(1 - q + r + wqr)*
+     -     (1 + q + r + wqr)*(-s + wpr + wqr)*(s + wpr + wqr)*
+     -     (1 - wpq + wpr + wqr)*(1 + wpq + wpr + wqr)*(r - wq + wqr)**2*
+     -     (r + wq + wqr)**2*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) + ztrb(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,
+     -    qr)/(16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)**2) + 
+     -  ztrb(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)**2*(1 + s + wpr + wq + wr)) + 
+     -  ztrb(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*
+     -     (1 + s + wpr + wq - wr)**2*(-1 + s + wpr + wq + wr)*
+     -     (1 + s + wpr + wq + wr)) + 
+     -  ztrb(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)**2*
+     -     (1 + s + wpr + wq - wr)*(-1 + s + wpr + wq + wr)*
+     -     (1 + s + wpr + wq + wr)) + 
+     -  ztrb(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)**2*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  ztrb(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)**2*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  ztrb(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)**2*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  ztrb(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)*wq**2*(1 - q + wq)**2*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  ztrb(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)*wq**3*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) - 
+     -  ztrb(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) - 
+     -  ztrb(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)**2*
+     -     (1 + p - s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)**2*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)**2*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)**2*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)**2*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**3*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrb(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)**2*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrb(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)*(r + s - wpr - wq)**2*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrb(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)**2*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrb(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)**2*
+     -     (1 + p + s - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)**2) + 
+     -  ztrb(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)**2*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)**2*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)**2*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)**2*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)**2*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)**2*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)**2*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**3*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  ztrb(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (s - wpr + wqr)*(s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  ztrb(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)**2*
+     -     (1 + p + s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (s - wpr + wqr)*(s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)**2*(-2 + 2*wr))\
+     -   + ztrb(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)**2*(-1 + s + wpr - wq + wr)*(-2 + 2*wr))\
+     -   - ztrb(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)**2*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztrb(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)**2*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztrb(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)**2*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztrb(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)**2*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztrb(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**3*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*
+     -     (-2 + 2*wr)) + ztrb(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)**2*
+     -     (1 + p + s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*
+     -     (-2 + 2*wr)) - ztrb(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)**2*(2 + 2*wr)) - 
+     -  ztrb(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)**2*(1 + s + wpr - wq + wr)*(2 + 2*wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)**2*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)**2*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)**2*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)**2*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) + 
+     -  ztrb(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**3*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) - 
+     -  ztrb(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*
+     -     (2 + 2*wr)) - ztrb(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)**2*
+     -     (1 + p + s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*
+     -     (2 + 2*wr)) + ztrb(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,
+     -    pr,qr)/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 - r + wpq + wpr + wq)*(1 + r + wpq + wpr + wq)*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq + wr)*(2 + wpq + wpr + wq + wr)**2) + 
+     -  ztrb(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 - r + wpq + wpr + wq)*(1 + r + wpq + wpr + wq)*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq + wr)**2*(2 + wpq + wpr + wq + wr)) + 
+     -  ztrb(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 - r + wpq + wpr + wq)*(1 + r + wpq + wpr + wq)*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)**2*
+     -     (wpq + wpr + wq + wr)*(2 + wpq + wpr + wq + wr)) + 
+     -  ztrb(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 - r + wpq + wpr + wq)*(1 + r + wpq + wpr + wq)*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)**2*(2 + wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq + wr)*(2 + wpq + wpr + wq + wr)) + 
+     -  ztrb(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 - r + wpq + wpr + wq)*(1 + r + wpq + wpr + wq)**2*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq + wr)*(2 + wpq + wpr + wq + wr)) + 
+     -  ztrb(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 - r + wpq + wpr + wq)**2*(1 + r + wpq + wpr + wq)*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq + wr)*(2 + wpq + wpr + wq + wr)) + 
+     -  ztrb(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)**2*
+     -     (1 - r + wpq + wpr + wq)*(1 + r + wpq + wpr + wq)*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq + wr)*(2 + wpq + wpr + wq + wr)) + 
+     -  ztrb(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)*wq**2*(1 - q + wq)**2*(1 + q + wq)*
+     -     (1 - r + wpq + wpr + wq)*(1 + r + wpq + wpr + wq)*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq + wr)*(2 + wpq + wpr + wq + wr)) + 
+     -  ztrb(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)*wq**3*(1 - q + wq)*(1 + q + wq)*
+     -     (1 - r + wpq + wpr + wq)*(1 + r + wpq + wpr + wq)*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq + wr)*(2 + wpq + wpr + wq + wr)) - 
+     -  ztrb(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 - r + wpq + wpr + wq)*(1 + r + wpq + wpr + wq)*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq + wr)*(2 + wpq + wpr + wq + wr)) - 
+     -  ztrb(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)**2*
+     -     (p - wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 - r + wpq + wpr + wq)*(1 + r + wpq + wpr + wq)*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq + wr)*(2 + wpq + wpr + wq + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*(-1 + r + wpq - wpr - wq)*(-1 + r + wpq + wpr - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)**2*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*(-1 + r + wpq - wpr - wq)*(-1 + r + wpq + wpr - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)**2*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*(-1 + r + wpq - wpr - wq)*(-1 + r + wpq + wpr - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)**2*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*(-1 + r + wpq - wpr - wq)*(-1 + r + wpq + wpr - wq)*
+     -     wq**2*(1 - q + wq)**2*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*(-1 + r + wpq - wpr - wq)*(-1 + r + wpq + wpr - wq)*
+     -     wq**3*(1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrb(wpq - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*(-1 + r + wpq - wpr - wq)*
+     -     (-1 + r + wpq + wpr - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrb(wpq - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*(-1 + r + wpq - wpr - wq)**2*
+     -     (-1 + r + wpq + wpr - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrb(wpq - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)**2*(-1 + r + wpq - wpr - wq)*
+     -     (-1 + r + wpq + wpr - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrb(wpq - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)**2*
+     -     (p + wpq - wq)*(-1 + r + wpq - wpr - wq)*(-1 + r + wpq + wpr - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)**2) + 
+     -  ztrb(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)**2*(1 + wq + wqr + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)**2*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)**2*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)*
+     -     (r + wq + wqr)**2*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)**2*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)**2*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)**2*(1 + q + wq)*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**3*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztrb(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztrb(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)**2*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(wpq - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + wpq - wpr - wq + wr)*(-2 + wpq + wpr - wq + wr)**2*
+     -     (-2 + 2*wr)) + ztrb(wpq - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + wpq - wpr - wq + wr)**2*(-2 + wpq + wpr - wq + wr)*
+     -     (-2 + 2*wr)) - ztrb(wpq - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)**2*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + wpq - wpr - wq + wr)*(-2 + wpq + wpr - wq + wr)*(-2 + 2*wr))\
+     -   - ztrb(wpq - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 + wq - wqr - wr)**2*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + wpq - wpr - wq + wr)*
+     -     (-2 + wpq + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztrb(wpq - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)**2*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + wpq - wpr - wq + wr)*
+     -     (-2 + wpq + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztrb(wpq - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)**2*(1 + q + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + wpq - wpr - wq + wr)*
+     -     (-2 + wpq + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztrb(wpq - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**3*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + wpq - wpr - wq + wr)*(-2 + wpq + wpr - wq + wr)*(-2 + 2*wr))\
+     -   + ztrb(wpq - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + wpq - wpr - wq + wr)*
+     -     (-2 + wpq + wpr - wq + wr)*(-2 + 2*wr)) + 
+     -  ztrb(wpq - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)**2*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + wpq - wpr - wq + wr)*(-2 + wpq + wpr - wq + wr)*(-2 + 2*wr))\
+     -   - ztrb(wpq - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(wpq - wpr - wq + wr)*(wpq + wpr - wq + wr)**2*
+     -     (2 + 2*wr)) - ztrb(wpq - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(wpq - wpr - wq + wr)**2*(wpq + wpr - wq + wr)*
+     -     (2 + 2*wr)) + ztrb(wpq - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)**2*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(wpq - wpr - wq + wr)*(wpq + wpr - wq + wr)*(2 + 2*wr)
+     -     ) + ztrb(wpq - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)**2*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(wpq - wpr - wq + wr)*(wpq + wpr - wq + wr)*(2 + 2*wr)
+     -     ) + ztrb(wpq - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)**2*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(wpq - wpr - wq + wr)*(wpq + wpr - wq + wr)*(2 + 2*wr)
+     -     ) + ztrb(wpq - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)**2*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(wpq - wpr - wq + wr)*(wpq + wpr - wq + wr)*(2 + 2*wr)
+     -     ) + ztrb(wpq - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**3*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(wpq - wpr - wq + wr)*(wpq + wpr - wq + wr)*(2 + 2*wr)
+     -     ) - ztrb(wpq - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)**2*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(wpq - wpr - wq + wr)*(wpq + wpr - wq + wr)*(2 + 2*wr)
+     -     ) - ztrb(wpq - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)**2*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(wpq - wpr - wq + wr)*(wpq + wpr - wq + wr)*(2 + 2*wr)
+     -     ) - ztrb(1 - r + s - wqr,1 + r + wqr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p - r + s - wqr)*
+     -     (1 + p - r + s - wqr)*(s - wpr - wqr)*(s + wpr - wqr)*wqr*
+     -     (1 - q + r + wqr)*(1 + q + r + wqr)*(r - wq + wqr)**2*
+     -     (r + wq + wqr)**2*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrb(-r + wpq - wqr,1 + r + wqr,r,pp,qq,rr,pq,pr,
+     -    qr)/(8.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p - r + wpq - wqr)*
+     -     (p - r + wpq - wqr)*(-1 + wpq - wpr - wqr)*(-1 + wpq + wpr - wqr)*
+     -     wqr*(1 - q + r + wqr)*(1 + q + r + wqr)*(r - wq + wqr)**2*
+     -     (r + wq + wqr)**2*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrb(2 - q + wpr - wqr,q,-1 + q + wqr,pp,qq,rr,pq,
+     -    pr,qr)/
+     -   (8.*q*wpr*(-1 + q - wq)**2*(-1 + q + wq)**2*(2 - p - q + wpr - wqr)*
+     -     (2 + p - q + wpr - wqr)*(-s + wpr - wqr)*(s + wpr - wqr)*
+     -     (1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*wqr*(-1 + q - r + wqr)*
+     -     (-1 + q + r + wqr)*(-2 + q + wqr - wr)*(q + wqr - wr)*
+     -     (-2 + q + wqr + wr)*(q + wqr + wr)) + 
+     -  ztrb(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)**2) + 
+     -  ztrb(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)**2*(1 + wq + wqr + wr)) + 
+     -  ztrb(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)**2*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)**2*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)**2*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)**2*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztrb(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)**2*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztrb(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)**2*(1 + p + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)**2*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)**2*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**3*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztrb(-wpr - wr,2 + s + wpr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*wpr*(s + wpr - wqr)*
+     -     (s + wpr + wqr)*(-p - wpr - wr)*(p - wpr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 - q + s + wpr + wr)*(2 + q + s + wpr + wr)*
+     -     (1 + s + wpr - wq + wr)**2*(1 + s + wpr + wq + wr)**2*(2 + 2*wr))\
+     -   - ztrb(-wpr - wr,1 + wpq + wpr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*wpr*(-1 + wpq + wpr - wqr)*
+     -     (-1 + wpq + wpr + wqr)*(-p - wpr - wr)*(p - wpr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(1 - q + wpq + wpr + wr)*
+     -     (1 + q + wpq + wpr + wr)*(wpq + wpr - wq + wr)**2*
+     -     (wpq + wpr + wq + wr)**2*(2 + 2*wr)) + 
+     -  ztrb(2 - wpr - wr,s + wpr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*wpr*(s + wpr - wqr)*
+     -     (s + wpr + wqr)*(2 - p - wpr - wr)*(2 + p - wpr - wr)*wr*
+     -     (-1 - r + wr)*(-1 + r + wr)*(-q + s + wpr + wr)*(q + s + wpr + wr)*
+     -     (-1 + s + wpr - wq + wr)**2*(-1 + s + wpr + wq + wr)**2*(-2 + 2*wr)
+     -     ) + ztrb(2 - wpr - wr,-1 + wpq + wpr + wr,-1 + wr,pp,qq,rr,pq,pr,
+     -    qr)/(16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*wpr*
+     -     (-1 + wpq + wpr - wqr)*(-1 + wpq + wpr + wqr)*(2 - p - wpr - wr)*
+     -     (2 + p - wpr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 - q + wpq + wpr + wr)*(-1 + q + wpq + wpr + wr)*
+     -     (-2 + wpq + wpr - wq + wr)**2*(-2 + wpq + wpr + wq + wr)**2*
+     -     (-2 + 2*wr)) - ztrb(wpr - wr,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wpr*(-1 + q - wq)**2*(-1 + q + wq)**2*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-2 + q - s + wpr - wr)*(-2 + q + s + wpr - wr)*
+     -     (-1 + q - wpq + wpr - wr)*(-1 + q + wpq + wpr - wr)*
+     -     (-2 + q - wqr - wr)*(-2 + q + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) + 
+     -  ztrb(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-wpq + wpr + wq - wr)*(wpq + wpr + wq - wr)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)**2*wr*(1 - r + wr)*(1 + r + wr)*(2 + 2*wr)) + 
+     -  ztrb(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-wpq + wpr + wq - wr)*(wpq + wpr + wq - wr)*
+     -     (-1 + wq - wqr - wr)**2*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) + 
+     -  ztrb(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-wpq + wpr + wq - wr)*(wpq + wpr + wq - wr)**2*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) + 
+     -  ztrb(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-wpq + wpr + wq - wr)**2*(wpq + wpr + wq - wr)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) + 
+     -  ztrb(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq - wr)**2*(-wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq - wr)*(-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(2 + 2*wr)) + 
+     -  ztrb(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - s + wpr + wq - wr)**2*
+     -     (-1 + s + wpr + wq - wr)*(-wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq - wr)*(-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(2 + 2*wr)) + 
+     -  ztrb(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)**2*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-wpq + wpr + wq - wr)*(wpq + wpr + wq - wr)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*(2 + 2*wr)) + 
+     -  ztrb(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)**2*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-wpq + wpr + wq - wr)*(wpq + wpr + wq - wr)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*(2 + 2*wr)) + 
+     -  ztrb(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**3*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-wpq + wpr + wq - wr)*(wpq + wpr + wq - wr)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*(2 + 2*wr)) - 
+     -  ztrb(wpr - wr,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wqr*(-s + wpr + wqr)*(s + wpr + wqr)*(1 - wpq + wpr + wqr)*
+     -     (1 + wpq + wpr + wqr)*(-p + wpr - wr)*(p + wpr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(2 - q + wqr + wr)*(2 + q + wqr + wr)*
+     -     (1 - wq + wqr + wr)**2*(1 + wq + wqr + wr)**2*(2 + 2*wr)) + 
+     -  ztrb(2 + wpr - wr,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wpr*(-1 + q - wq)**2*(-1 + q + wq)**2*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(q - s + wpr - wr)*(q + s + wpr - wr)*
+     -     (1 + q - wpq + wpr - wr)*(1 + q + wpq + wpr - wr)*(q - wqr - wr)*
+     -     (q + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztrb(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (2 - wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)**2*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztrb(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (2 - wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)**2*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztrb(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (2 - wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)**2*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztrb(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (2 - wpq + wpr + wq - wr)**2*(2 + wpq + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztrb(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - s + wpr + wq - wr)*
+     -     (1 + s + wpr + wq - wr)**2*(2 - wpq + wpr + wq - wr)*
+     -     (2 + wpq + wpr + wq - wr)*(1 + wq - wqr - wr)*(1 + wq + wqr - wr)*
+     -     wr*(-1 - r + wr)*(-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztrb(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - s + wpr + wq - wr)**2*
+     -     (1 + s + wpr + wq - wr)*(2 - wpq + wpr + wq - wr)*
+     -     (2 + wpq + wpr + wq - wr)*(1 + wq - wqr - wr)*(1 + wq + wqr - wr)*
+     -     wr*(-1 - r + wr)*(-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztrb(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)**2*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (2 - wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztrb(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)**2*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (2 - wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  ztrb(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**3*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (2 - wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) + 
+     -  ztrb(2 + wpr - wr,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wqr*(-s + wpr + wqr)*(s + wpr + wqr)*(1 - wpq + wpr + wqr)*
+     -     (1 + wpq + wpr + wqr)*(2 - p + wpr - wr)*(2 + p + wpr - wr)*wr*
+     -     (-1 - r + wr)*(-1 + r + wr)*(-q + wqr + wr)*(q + wqr + wr)*
+     -     (-1 - wq + wqr + wr)**2*(-1 + wq + wqr + wr)**2*(-2 + 2*wr)) - 
+     -  ztrb(s - wqr - wr,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(s - wpr - wqr)*(s + wpr - wqr)*
+     -     wqr*(-p + s - wqr - wr)*(p + s - wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 - q + wqr + wr)*(2 + q + wqr + wr)*
+     -     (1 - wq + wqr + wr)**2*(1 + wq + wqr + wr)**2*(2 + 2*wr)) + 
+     -  ztrb(2 + s - wqr - wr,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(s - wpr - wqr)*(s + wpr - wqr)*
+     -     wqr*(2 - p + s - wqr - wr)*(2 + p + s - wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-q + wqr + wr)*(q + wqr + wr)*
+     -     (-1 - wq + wqr + wr)**2*(-1 + wq + wqr + wr)**2*(-2 + 2*wr)) - 
+     -  ztrb(-1 + wpq - wqr - wr,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-1 + wpq - wpr - wqr)*
+     -     (-1 + wpq + wpr - wqr)*wqr*(-1 - p + wpq - wqr - wr)*
+     -     (-1 + p + wpq - wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (2 - q + wqr + wr)*(2 + q + wqr + wr)*(1 - wq + wqr + wr)**2*
+     -     (1 + wq + wqr + wr)**2*(2 + 2*wr)) + 
+     -  ztrb(1 + wpq - wqr - wr,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-1 + wpq - wpr - wqr)*
+     -     (-1 + wpq + wpr - wqr)*wqr*(1 - p + wpq - wqr - wr)*
+     -     (1 + p + wpq - wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-q + wqr + wr)*(q + wqr + wr)*(-1 - wq + wqr + wr)**2*
+     -     (-1 + wq + wqr + wr)**2*(-2 + 2*wr)) - 
+     -  ztrb001(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztrb001(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  ztrb001(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztrb010(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wpr*(1 + p - r + wpr)*(1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 - p - s + wq)*(-1 - p + s + wq)*(-p - wpq + wq)*
+     -     (-p + wpq + wq)*(-1 - p - wpr + wq - wqr)*
+     -     (-1 - p - wpr + wq + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztrb010(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*r*(-1 + p + r - wpr)*(-1 + p + r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-1 + p - s + wq)*(-1 + p + s + wq)*(p - wpq + wq)*
+     -     (p + wpq + wq)*(-r + wq - wqr)*(-r + wq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrb010(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrb010(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrb010(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*p*wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) - 
+     -  ztrb010(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (16.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*wq**2*(1 - q + wq)*
+     -     (1 + q + wq)*(-r - s + wpr + wq)*(-r + s + wpr + wq)*
+     -     (1 - r - wpq + wpr + wq)*(1 - r + wpq + wpr + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrb010(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,
+     -    pr,qr)/
+     -   (16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) - 
+     -  ztrb010(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 - r + wpq + wpr + wq)*(1 + r + wpq + wpr + wq)*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq + wr)*(2 + wpq + wpr + wq + wr)) - 
+     -  ztrb010(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztrb010(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-1 - s + wpr + wq - wr)*(-1 + s + wpr + wq - wr)*
+     -     (-wpq + wpr + wq - wr)*(wpq + wpr + wq - wr)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*(2 + 2*wr)) + 
+     -  ztrb010(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (32.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (2 - wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) - 
+     -  (ztrb001(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr) - 
+     -     ztrb100(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr))/
+     -   (16.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-r + s + wpr + wq)*(r + s + wpr + wq)*(-s - wpr - wqr)*
+     -     (-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq + wr)*(1 + s + wpr + wq + wr)) + 
+     -  (-ztrb010(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr) + 
+     -     ztrb100(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr))/
+     -   (16.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)*(r + s - wpr - wq)*(r + s + wpr - wq)*wq**2*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  (ztrb010(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr) - 
+     -     ztrb100(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr))/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*wqr*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) - 
+     -  (-ztrb010(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr) + 
+     -     ztrb100(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr))/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*(-2 + 2*wr)) + 
+     -  (-ztrb010(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr) + 
+     -     ztrb100(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr))/
+     -   (32.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*(2 + 2*wr)) - 
+     -  (ztrb001(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr) - 
+     -     ztrb100(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,pr,qr))/
+     -   (16.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (1 - r + wpq + wpr + wq)*(1 + r + wpq + wpr + wq)*
+     -     (-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq + wr)*(2 + wpq + wpr + wq + wr)) + 
+     -  (-ztrb010(wpq - wq,1 + wq,r,pp,qq,rr,pq,pr,qr) + 
+     -     ztrb100(wpq - wq,1 + wq,r,pp,qq,rr,pq,pr,qr))/
+     -   (16.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*(-1 + r + wpq - wpr - wq)*(-1 + r + wpq + wpr - wq)*
+     -     wq**2*(1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  (ztrb010(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr) - 
+     -     ztrb100(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr))/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  (-ztrb010(wpq - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr) + 
+     -     ztrb100(wpq - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr))/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*
+     -     (1 + wq + wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-2 + wpq - wpr - wq + wr)*(-2 + wpq + wpr - wq + wr)*(-2 + 2*wr))\
+     -   + (-ztrb010(wpq - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr) + 
+     -     ztrb100(wpq - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr))/
+     -   (32.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*wq**2*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(wpq - wpr - wq + wr)*(wpq + wpr - wq + wr)*(2 + 2*wr)
+     -     ) - (ztrb001(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,
+     -      qr) - ztrb100(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,
+     -      qr))/
+     -   (16.*wpr*wq**2*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*wqr*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr))
+c
+      intc =        -ztrc(-p,q,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*q*(-2 - p + q - s)*(-2 - p + q + s)*(-1 - p - wp)*
+     -     (-1 - p + wp)*(-1 - p + q - wpq)*(-1 - p + q + wpq)*wpr*
+     -     (1 + p - r + wpr)*(1 + p + r + wpr)*(-1 + q - wq)*(-1 + q + wq)*
+     -     (-2 - p + q - wpr - wqr)*(-2 - p + q - wpr + wqr)*(p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztrc(-p,2 + p + s,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*r*s*(2 + p - q + s)*(2 + p + q + s)*(-1 - p - wp)*
+     -     (-1 - p + wp)*(1 + s - wpq)*(1 + s + wpq)*(-1 - p + r - wpr)*
+     -     (-1 - p + r + wpr)*(1 + p + s - wq)*(1 + p + s + wq)*
+     -     (1 + p - r + s - wqr)*(1 + p - r + s + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(-p,2 + p + s,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*s*(2 + p - q + s)*(2 + p + q + s)*(-1 - p - wp)*(-1 - p + wp)*
+     -     (1 + s - wpq)*(1 + s + wpq)*wpr*(1 + p - r + wpr)*
+     -     (1 + p + r + wpr)*(1 + p + s - wq)*(1 + p + s + wq)*
+     -     (s - wpr - wqr)*(s - wpr + wqr)*(p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztrc(-p,2 + p + s,1 + p + s + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*s*(2 + p - q + s)*(2 + p + q + s)*(-1 - p - wp)*(-1 - p + wp)*
+     -     (1 + s - wpq)*(1 + s + wpq)*(1 + p + s - wq)*(1 + p + s + wq)*wqr*
+     -     (1 + p - r + s + wqr)*(1 + p + r + s + wqr)*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(p + s + wqr - wr)*(2 + p + s + wqr - wr)*
+     -     (p + s + wqr + wr)*(2 + p + s + wqr + wr)) + 
+     -  ztrc(-p,2 + p + s,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*s*(2 + p - q + s)*(2 + p + q + s)*(-1 - p - wp)*(-1 - p + wp)*
+     -     (1 + s - wpq)*(1 + s + wpq)*(1 + p + s - wq)*(1 + p + s + wq)*
+     -     (2 + p + s - wqr - wr)*(2 + p + s + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 - p - wpr + wr)*(-2 - p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrc(-p,2 + p + s,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*s*(2 + p - q + s)*(2 + p + q + s)*(-1 - p - wp)*(-1 - p + wp)*
+     -     (1 + s - wpq)*(1 + s + wpq)*(1 + p + s - wq)*(1 + p + s + wq)*
+     -     (p + s - wqr - wr)*(p + s + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (-p - wpr + wr)*(-p + wpr + wr)*(2 + 2*wr)) - 
+     -  ztrc(-p,1 + p + wpq,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*r*(-1 - p - wp)*(-1 - p + wp)*wpq*(1 + p - q + wpq)*
+     -     (1 + p + q + wpq)*(-1 - s + wpq)*(-1 + s + wpq)*(-1 - p + r - wpr)*
+     -     (-1 - p + r + wpr)*(p + wpq - wq)*(p + wpq + wq)*
+     -     (p - r + wpq - wqr)*(p - r + wpq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(-p,1 + p + wpq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*(-1 - p - wp)*(-1 - p + wp)*wpq*(1 + p - q + wpq)*
+     -     (1 + p + q + wpq)*(-1 - s + wpq)*(-1 + s + wpq)*wpr*
+     -     (1 + p - r + wpr)*(1 + p + r + wpr)*(p + wpq - wq)*(p + wpq + wq)*
+     -     (-1 + wpq - wpr - wqr)*(-1 + wpq - wpr + wqr)*(p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztrc(-p,1 + p + wpq,p + wpq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*(-1 - p - wp)*(-1 - p + wp)*wpq*(1 + p - q + wpq)*
+     -     (1 + p + q + wpq)*(-1 - s + wpq)*(-1 + s + wpq)*(p + wpq - wq)*
+     -     (p + wpq + wq)*wqr*(p - r + wpq + wqr)*(p + r + wpq + wqr)*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*
+     -     (-1 + p + wpq + wqr - wr)*(1 + p + wpq + wqr - wr)*
+     -     (-1 + p + wpq + wqr + wr)*(1 + p + wpq + wqr + wr)) + 
+     -  ztrc(-p,1 + p + wpq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 - p - wp)*(-1 - p + wp)*wpq*(1 + p - q + wpq)*
+     -     (1 + p + q + wpq)*(-1 - s + wpq)*(-1 + s + wpq)*(p + wpq - wq)*
+     -     (p + wpq + wq)*(1 + p + wpq - wqr - wr)*(1 + p + wpq + wqr - wr)*
+     -     wr*(-1 - r + wr)*(-1 + r + wr)*(-2 - p - wpr + wr)*
+     -     (-2 - p + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztrc(-p,1 + p + wpq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 - p - wp)*(-1 - p + wp)*wpq*(1 + p - q + wpq)*
+     -     (1 + p + q + wpq)*(-1 - s + wpq)*(-1 + s + wpq)*(p + wpq - wq)*
+     -     (p + wpq + wq)*(-1 + p + wpq - wqr - wr)*(-1 + p + wpq + wqr - wr)*
+     -     wr*(1 - r + wr)*(1 + r + wr)*(-p - wpr + wr)*(-p + wpr + wr)*
+     -     (2 + 2*wr)) - ztrc(-p,1 + wq,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*(-1 - p - wp)*(-1 - p + wp)*wpr*(1 + p - r + wpr)*
+     -     (1 + p + r + wpr)*wq*(1 - q + wq)*(1 + q + wq)*(-1 - p - s + wq)*
+     -     (-1 - p + s + wq)*(-p - wpq + wq)*(-p + wpq + wq)*
+     -     (-1 - p - wpr + wq - wqr)*(-1 - p - wpr + wq + wqr)*(p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztrc(-p,2 + p + wpr + wqr,1 + p + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*(-1 - p - wp)*(-1 - p + wp)*wpr*(1 + p - r + wpr)*
+     -     (1 + p + r + wpr)*wqr*(2 + p - q + wpr + wqr)*
+     -     (2 + p + q + wpr + wqr)*(-s + wpr + wqr)*(s + wpr + wqr)*
+     -     (1 - wpq + wpr + wqr)*(1 + wpq + wpr + wqr)*
+     -     (1 + p + wpr - wq + wqr)*(1 + p + wpr + wq + wqr)*(p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(p + wpr + wr)*(2 + p + wpr + wr)) - 
+     -  ztrc(p,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*q*r*(-2 + p + q - s)*(-2 + p + q + s)*(-1 + p - wp)*
+     -     (-1 + p + wp)*(-1 + p + q - wpq)*(-1 + p + q + wpq)*
+     -     (-1 + p + r - wpr)*(-1 + p + r + wpr)*(-1 + q - wq)*(-1 + q + wq)*
+     -     (-1 + q - r - wqr)*(-1 + q - r + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(p,q,-1 + q + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*q*(-2 + p + q - s)*(-2 + p + q + s)*(-1 + p - wp)*
+     -     (-1 + p + wp)*(-1 + p + q - wpq)*(-1 + p + q + wpq)*(-1 + q - wq)*
+     -     (-1 + q + wq)*wqr*(-1 + q - r + wqr)*(-1 + q + r + wqr)*
+     -     (-2 + p + q - wpr + wqr)*(-2 + p + q + wpr + wqr)*
+     -     (-2 + q + wqr - wr)*(q + wqr - wr)*(-2 + q + wqr + wr)*
+     -     (q + wqr + wr)) + ztrc(p,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*q*(-2 + p + q - s)*(-2 + p + q + s)*(-1 + p - wp)*
+     -     (-1 + p + wp)*(-1 + p + q - wpq)*(-1 + p + q + wpq)*(-1 + q - wq)*
+     -     (-1 + q + wq)*(q - wqr - wr)*(q + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrc(p,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*q*(-2 + p + q - s)*(-2 + p + q + s)*(-1 + p - wp)*
+     -     (-1 + p + wp)*(-1 + p + q - wpq)*(-1 + p + q + wpq)*(-1 + q - wq)*
+     -     (-1 + q + wq)*(-2 + q - wqr - wr)*(-2 + q + wqr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr))
+     -    - ztrc(p,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*r*(-1 + p - wp)*(-1 + p + wp)*(-1 + p + r - wpr)*
+     -     (-1 + p + r + wpr)*wq*(1 - q + wq)*(1 + q + wq)*(-1 + p - s + wq)*
+     -     (-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrc(p,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*(-1 + p - wp)*(-1 + p + wp)*wq*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     wqr*(-r + wq + wqr)*(r + wq + wqr)*(-1 + p - wpr + wq + wqr)*
+     -     (-1 + p + wpr + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrc(p,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrc(p,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wq*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + p - s + wq)*(-1 + p + s + wq)*(p - wpq + wq)*(p + wpq + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(p - wpr + wr)*(p + wpr + wr)*(2 + 2*wr)) - 
+     -  ztrc(p,1 + r + wqr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*p*r*(-1 + p - wp)*(-1 + p + wp)*(-1 + p + r - wpr)*
+     -     (-1 + p + r + wpr)*wqr*(1 - q + r + wqr)*(1 + q + r + wqr)*
+     -     (-1 + p + r - s + wqr)*(-1 + p + r + s + wqr)*(p + r - wpq + wqr)*
+     -     (p + r + wpq + wqr)*(r - wq + wqr)*(r + wq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrc(p,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wqr*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + p - wpr + wr)*(-2 + p + wpr + wr)*
+     -     (-q + wqr + wr)*(q + wqr + wr)*(-2 + p - s + wqr + wr)*
+     -     (-2 + p + s + wqr + wr)*(-1 + p - wpq + wqr + wr)*
+     -     (-1 + p + wpq + wqr + wr)*(-1 - wq + wqr + wr)*
+     -     (-1 + wq + wqr + wr)*(-2 + 2*wr)) - 
+     -  ztrc(p,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*p*(-1 + p - wp)*(-1 + p + wp)*wqr*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (p - wpr + wr)*(p + wpr + wr)*(2 - q + wqr + wr)*
+     -     (2 + q + wqr + wr)*(p - s + wqr + wr)*(p + s + wqr + wr)*
+     -     (1 + p - wpq + wqr + wr)*(1 + p + wpq + wqr + wr)*
+     -     (1 - wq + wqr + wr)*(1 + wq + wqr + wr)*(2 + 2*wr)) - 
+     -  ztrc(2 - q - s,q,-1 + q + s + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*(2 - p - q - s)*(2 + p - q - s)*s*(1 - q - s - wp)*
+     -     (1 - q - s + wp)*(1 - s - wpq)*(1 - s + wpq)*wpr*
+     -     (-1 + q - r + s + wpr)*(-1 + q + r + s + wpr)*(-1 + q - wq)*
+     -     (-1 + q + wq)*(-s - wpr - wqr)*(-s - wpr + wqr)*
+     -     (-2 + q + s + wpr - wr)*(q + s + wpr - wr)*(-2 + q + s + wpr + wr)*
+     -     (q + s + wpr + wr)) - 
+     -  ztrc(2 - q + s,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*r*s*(2 - p - q + s)*(2 + p - q + s)*(1 - q + s - wp)*
+     -     (1 - q + s + wp)*(1 + s - wpq)*(1 + s + wpq)*(1 - q + r + s - wpr)*
+     -     (1 - q + r + s + wpr)*(-1 + q - wq)*(-1 + q + wq)*
+     -     (-1 + q - r - wqr)*(-1 + q - r + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(2 - q + s,q,-1 + q + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*s*(2 - p - q + s)*(2 + p - q + s)*(1 - q + s - wp)*
+     -     (1 - q + s + wp)*(1 + s - wpq)*(1 + s + wpq)*(-1 + q - wq)*
+     -     (-1 + q + wq)*wqr*(-1 + q - r + wqr)*(-1 + q + r + wqr)*
+     -     (s - wpr + wqr)*(s + wpr + wqr)*(-2 + q + wqr - wr)*(q + wqr - wr)*
+     -     (-2 + q + wqr + wr)*(q + wqr + wr)) + 
+     -  ztrc(2 - q + s,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*s*(2 - p - q + s)*(2 + p - q + s)*(1 - q + s - wp)*
+     -     (1 - q + s + wp)*(1 + s - wpq)*(1 + s + wpq)*(-1 + q - wq)*
+     -     (-1 + q + wq)*(q - wqr - wr)*(q + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-q + s - wpr + wr)*(-q + s + wpr + wr)*(-2 + 2*wr))\
+     -   - ztrc(2 - q + s,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*s*(2 - p - q + s)*(2 + p - q + s)*(1 - q + s - wp)*
+     -     (1 - q + s + wp)*(1 + s - wpq)*(1 + s + wpq)*(-1 + q - wq)*
+     -     (-1 + q + wq)*(-2 + q - wqr - wr)*(-2 + q + wqr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(2 - q + s - wpr + wr)*
+     -     (2 - q + s + wpr + wr)*(2 + 2*wr)) - 
+     -  ztrc(1 - wp,q,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*(1 - p - wp)*(1 + p - wp)*(-1 + q - s - wp)*(-1 + q + s - wp)*
+     -     wp*(q - wp - wpq)*(q - wp + wpq)*wpr*(-r + wp + wpr)*
+     -     (r + wp + wpr)*(-1 + q - wq)*(-1 + q + wq)*
+     -     (-1 + q - wp - wpr - wqr)*(-1 + q - wp - wpr + wqr)*
+     -     (-1 + wp + wpr - wr)*(1 + wp + wpr - wr)*(-1 + wp + wpr + wr)*
+     -     (1 + wp + wpr + wr)) - 
+     -  ztrc(1 - wp,1 + s + wp,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*s*(1 - p - wp)*(1 + p - wp)*wp*(1 - q + s + wp)*
+     -     (1 + q + s + wp)*(1 + s - wpq)*(1 + s + wpq)*(r - wp - wpr)*
+     -     (r - wp + wpr)*(s + wp - wq)*(s + wp + wq)*(-r + s + wp - wqr)*
+     -     (-r + s + wp + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrc(1 - wp,1 + s + wp,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*s*(1 - p - wp)*(1 + p - wp)*wp*(1 - q + s + wp)*(1 + q + s + wp)*
+     -     (1 + s - wpq)*(1 + s + wpq)*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     (s + wp - wq)*(s + wp + wq)*(s - wpr - wqr)*(s - wpr + wqr)*
+     -     (-1 + wp + wpr - wr)*(1 + wp + wpr - wr)*(-1 + wp + wpr + wr)*
+     -     (1 + wp + wpr + wr)) - 
+     -  ztrc(1 - wp,1 + s + wp,s + wp + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*s*(1 - p - wp)*(1 + p - wp)*wp*(1 - q + s + wp)*(1 + q + s + wp)*
+     -     (1 + s - wpq)*(1 + s + wpq)*(s + wp - wq)*(s + wp + wq)*wqr*
+     -     (-r + s + wp + wqr)*(r + s + wp + wqr)*(s - wpr + wqr)*
+     -     (s + wpr + wqr)*(-1 + s + wp + wqr - wr)*(1 + s + wp + wqr - wr)*
+     -     (-1 + s + wp + wqr + wr)*(1 + s + wp + wqr + wr)) + 
+     -  ztrc(1 - wp,1 + s + wp,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p - wp)*(1 + p - wp)*wp*(1 - q + s + wp)*
+     -     (1 + q + s + wp)*(1 + s - wpq)*(1 + s + wpq)*(s + wp - wq)*
+     -     (s + wp + wq)*(1 + s + wp - wqr - wr)*(1 + s + wp + wqr - wr)*wr*
+     -     (-1 - r + wr)*(-1 + r + wr)*(-1 - wp - wpr + wr)*
+     -     (-1 - wp + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztrc(1 - wp,1 + s + wp,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 - p - wp)*(1 + p - wp)*wp*(1 - q + s + wp)*
+     -     (1 + q + s + wp)*(1 + s - wpq)*(1 + s + wpq)*(s + wp - wq)*
+     -     (s + wp + wq)*(-1 + s + wp - wqr - wr)*(-1 + s + wp + wqr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(1 - wp - wpr + wr)*(1 - wp + wpr + wr)*
+     -     (2 + 2*wr)) - ztrc(1 - wp,wp + wpq,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*(1 - p - wp)*(1 + p - wp)*wp*wpq*(-1 - s + wpq)*(-1 + s + wpq)*
+     -     (-q + wp + wpq)*(q + wp + wpq)*(r - wp - wpr)*(r - wp + wpr)*
+     -     (-1 + wp + wpq - wq)*(-1 + wp + wpq + wq)*
+     -     (-1 - r + wp + wpq - wqr)*(-1 - r + wp + wpq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(1 - wp,wp + wpq,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*(1 - p - wp)*(1 + p - wp)*wp*wpq*(-1 - s + wpq)*(-1 + s + wpq)*
+     -     (-q + wp + wpq)*(q + wp + wpq)*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     (-1 + wp + wpq - wq)*(-1 + wp + wpq + wq)*(-1 + wpq - wpr - wqr)*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (-1 + wp + wpr + wr)*(1 + wp + wpr + wr)) - 
+     -  ztrc(1 - wp,wp + wpq,-1 + wp + wpq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*(1 - p - wp)*(1 + p - wp)*wp*wpq*(-1 - s + wpq)*(-1 + s + wpq)*
+     -     (-q + wp + wpq)*(q + wp + wpq)*(-1 + wp + wpq - wq)*
+     -     (-1 + wp + wpq + wq)*wqr*(-1 - r + wp + wpq + wqr)*
+     -     (-1 + r + wp + wpq + wqr)*(-1 + wpq - wpr + wqr)*
+     -     (-1 + wpq + wpr + wqr)*(-2 + wp + wpq + wqr - wr)*
+     -     (wp + wpq + wqr - wr)*(-2 + wp + wpq + wqr + wr)*
+     -     (wp + wpq + wqr + wr)) + 
+     -  ztrc(1 - wp,wp + wpq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(1 - p - wp)*(1 + p - wp)*wp*wpq*(-1 - s + wpq)*(-1 + s + wpq)*
+     -     (-q + wp + wpq)*(q + wp + wpq)*(-1 + wp + wpq - wq)*
+     -     (-1 + wp + wpq + wq)*(wp + wpq - wqr - wr)*(wp + wpq + wqr - wr)*
+     -     wr*(-1 - r + wr)*(-1 + r + wr)*(-1 - wp - wpr + wr)*
+     -     (-1 - wp + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztrc(1 - wp,wp + wpq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*(1 - p - wp)*(1 + p - wp)*wp*wpq*(-1 - s + wpq)*(-1 + s + wpq)*
+     -     (-q + wp + wpq)*(q + wp + wpq)*(-1 + wp + wpq - wq)*
+     -     (-1 + wp + wpq + wq)*(-2 + wp + wpq - wqr - wr)*
+     -     (-2 + wp + wpq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 - wp - wpr + wr)*(1 - wp + wpr + wr)*(2 + 2*wr)) - 
+     -  ztrc(1 - wp,1 + wq,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*(1 - p - wp)*(1 + p - wp)*wp*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     wq*(1 - q + wq)*(1 + q + wq)*(-s - wp + wq)*(s - wp + wq)*
+     -     (1 - wp - wpq + wq)*(1 - wp + wpq + wq)*(-wp - wpr + wq - wqr)*
+     -     (-wp - wpr + wq + wqr)*(-1 + wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (-1 + wp + wpr + wr)*(1 + wp + wpr + wr)) - 
+     -  ztrc(1 - wp,1 + wp + wpr + wqr,wp + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*(1 - p - wp)*(1 + p - wp)*wp*wpr*(-r + wp + wpr)*(r + wp + wpr)*
+     -     wqr*(-s + wpr + wqr)*(s + wpr + wqr)*(1 - q + wp + wpr + wqr)*
+     -     (1 + q + wp + wpr + wqr)*(1 - wpq + wpr + wqr)*
+     -     (1 + wpq + wpr + wqr)*(wp + wpr - wq + wqr)*(wp + wpr + wq + wqr)*
+     -     (-1 + wp + wpr - wr)*(1 + wp + wpr - wr)*(-1 + wp + wpr + wr)*
+     -     (1 + wp + wpr + wr)) - 
+     -  ztrc(1 + wp,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*r*wp*(1 - p + wp)*(1 + p + wp)*(-1 + q - s + wp)*
+     -     (-1 + q + s + wp)*(q + wp - wpq)*(q + wp + wpq)*(r + wp - wpr)*
+     -     (r + wp + wpr)*(-1 + q - wq)*(-1 + q + wq)*(-1 + q - r - wqr)*
+     -     (-1 + q - r + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrc(1 + wp,q,-1 + q + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*wp*(1 - p + wp)*(1 + p + wp)*(-1 + q - s + wp)*
+     -     (-1 + q + s + wp)*(q + wp - wpq)*(q + wp + wpq)*(-1 + q - wq)*
+     -     (-1 + q + wq)*wqr*(-1 + q - r + wqr)*(-1 + q + r + wqr)*
+     -     (-1 + q + wp - wpr + wqr)*(-1 + q + wp + wpr + wqr)*
+     -     (-2 + q + wqr - wr)*(q + wqr - wr)*(-2 + q + wqr + wr)*
+     -     (q + wqr + wr)) + ztrc(1 + wp,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wp*(1 - p + wp)*(1 + p + wp)*(-1 + q - s + wp)*
+     -     (-1 + q + s + wp)*(q + wp - wpq)*(q + wp + wpq)*(-1 + q - wq)*
+     -     (-1 + q + wq)*(q - wqr - wr)*(q + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-1 + wp - wpr + wr)*(-1 + wp + wpr + wr)*(-2 + 2*wr)
+     -     ) - ztrc(1 + wp,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wp*(1 - p + wp)*(1 + p + wp)*(-1 + q - s + wp)*
+     -     (-1 + q + s + wp)*(q + wp - wpq)*(q + wp + wpq)*(-1 + q - wq)*
+     -     (-1 + q + wq)*(-2 + q - wqr - wr)*(-2 + q + wqr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(1 + wp - wpr + wr)*(1 + wp + wpr + wr)*
+     -     (2 + 2*wr)) - ztrc(1 + wp,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*wp*(1 - p + wp)*(1 + p + wp)*(r + wp - wpr)*(r + wp + wpr)*wq*
+     -     (1 - q + wq)*(1 + q + wq)*(-s + wp + wq)*(s + wp + wq)*
+     -     (1 + wp - wpq + wq)*(1 + wp + wpq + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrc(1 + wp,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*wp*(1 - p + wp)*(1 + p + wp)*wq*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(1 + wp - wpq + wq)*
+     -     (1 + wp + wpq + wq)*wqr*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (wp - wpr + wq + wqr)*(wp + wpr + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrc(1 + wp,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(1 + wp - wpq + wq)*
+     -     (1 + wp + wpq + wq)*(1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*
+     -     (-1 - r + wr)*(-1 + r + wr)*(-1 + wp - wpr + wr)*
+     -     (-1 + wp + wpr + wr)*(-2 + 2*wr)) - 
+     -  ztrc(1 + wp,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wq*(1 - q + wq)*(1 + q + wq)*
+     -     (-s + wp + wq)*(s + wp + wq)*(1 + wp - wpq + wq)*
+     -     (1 + wp + wpq + wq)*(-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(1 + wp - wpr + wr)*(1 + wp + wpr + wr)*
+     -     (2 + 2*wr)) - ztrc(1 + wp,1 + r + wqr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*wp*(1 - p + wp)*(1 + p + wp)*(r + wp - wpr)*(r + wp + wpr)*wqr*
+     -     (1 - q + r + wqr)*(1 + q + r + wqr)*(r - s + wp + wqr)*
+     -     (r + s + wp + wqr)*(1 + r + wp - wpq + wqr)*
+     -     (1 + r + wp + wpq + wqr)*(r - wq + wqr)*(r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) + 
+     -  ztrc(1 + wp,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wqr*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-1 + wp - wpr + wr)*(-1 + wp + wpr + wr)*(-q + wqr + wr)*
+     -     (q + wqr + wr)*(-1 - s + wp + wqr + wr)*(-1 + s + wp + wqr + wr)*
+     -     (wp - wpq + wqr + wr)*(wp + wpq + wqr + wr)*(-1 - wq + wqr + wr)*
+     -     (-1 + wq + wqr + wr)*(-2 + 2*wr)) - 
+     -  ztrc(1 + wp,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wp*(1 - p + wp)*(1 + p + wp)*wqr*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (1 + wp - wpr + wr)*(1 + wp + wpr + wr)*(2 - q + wqr + wr)*
+     -     (2 + q + wqr + wr)*(1 - s + wp + wqr + wr)*(1 + s + wp + wqr + wr)*
+     -     (2 + wp - wpq + wqr + wr)*(2 + wp + wpq + wqr + wr)*
+     -     (1 - wq + wqr + wr)*(1 + wq + wqr + wr)*(2 + 2*wr)) - 
+     -  ztrc(1 - q - wpq,q,q + wpq + wpr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*(1 - p - q - wpq)*(1 + p - q - wpq)*(-1 - s - wpq)*
+     -     (-1 + s - wpq)*(-q - wp - wpq)*(-q + wp - wpq)*wpq*wpr*
+     -     (q - r + wpq + wpr)*(q + r + wpq + wpr)*(-1 + q - wq)*
+     -     (-1 + q + wq)*(-1 - wpq - wpr - wqr)*(-1 - wpq - wpr + wqr)*
+     -     (-1 + q + wpq + wpr - wr)*(1 + q + wpq + wpr - wr)*
+     -     (-1 + q + wpq + wpr + wr)*(1 + q + wpq + wpr + wr)) - 
+     -  ztrc(1 - q + wpq,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*r*wpq*(1 - p - q + wpq)*(1 + p - q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*(-q - wp + wpq)*(-q + wp + wpq)*
+     -     (-q + r + wpq - wpr)*(-q + r + wpq + wpr)*(-1 + q - wq)*
+     -     (-1 + q + wq)*(-1 + q - r - wqr)*(-1 + q - r + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(1 - q + wpq,q,-1 + q + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*wpq*(1 - p - q + wpq)*(1 + p - q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*(-q - wp + wpq)*(-q + wp + wpq)*(-1 + q - wq)*
+     -     (-1 + q + wq)*wqr*(-1 + q - r + wqr)*(-1 + q + r + wqr)*
+     -     (-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*(-2 + q + wqr - wr)*
+     -     (q + wqr - wr)*(-2 + q + wqr + wr)*(q + wqr + wr)) + 
+     -  ztrc(1 - q + wpq,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wpq*(1 - p - q + wpq)*(1 + p - q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*(-q - wp + wpq)*(-q + wp + wpq)*(-1 + q - wq)*
+     -     (-1 + q + wq)*(q - wqr - wr)*(q + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-1 - q + wpq - wpr + wr)*(-1 - q + wpq + wpr + wr)*
+     -     (-2 + 2*wr)) - ztrc(1 - q + wpq,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wpq*(1 - p - q + wpq)*(1 + p - q + wpq)*(-1 - s + wpq)*
+     -     (-1 + s + wpq)*(-q - wp + wpq)*(-q + wp + wpq)*(-1 + q - wq)*
+     -     (-1 + q + wq)*(-2 + q - wqr - wr)*(-2 + q + wqr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(1 - q + wpq - wpr + wr)*
+     -     (1 - q + wpq + wpr + wr)*(2 + 2*wr)) - 
+     -  ztrc(1 - r - wpr,1 + r + s + wpr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p - r - wpr)*
+     -     (1 + p - r - wpr)*(-r - wp - wpr)*(-r + wp - wpr)*wpr*
+     -     (1 - q + r + s + wpr)*(1 + q + r + s + wpr)*(r + s + wpr - wq)*
+     -     (r + s + wpr + wq)*(s + wpr - wqr)*(s + wpr + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(1 - r - wpr,r + wpq + wpr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(1 - p - r - wpr)*
+     -     (1 + p - r - wpr)*(-r - wp - wpr)*(-r + wp - wpr)*wpr*
+     -     (-q + r + wpq + wpr)*(q + r + wpq + wpr)*(-1 + r + wpq + wpr - wq)*
+     -     (-1 + r + wpq + wpr + wq)*(-1 + wpq + wpr - wqr)*
+     -     (-1 + wpq + wpr + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrc(1 - r + wpr,q,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*
+     -     (-1 + q - r - s + wpr)*(-1 + q - r + s + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*(q - r - wpq + wpr)*(q - r + wpq + wpr)*
+     -     (-1 + q - wq)*(-1 + q + wq)*(-1 + q - r - wqr)*(-1 + q - r + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(1 - r + wpr,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*wq*(1 - q + wq)*(1 + q + wq)*(-r - s + wpr + wq)*
+     -     (-r + s + wpr + wq)*(1 - r - wpq + wpr + wq)*
+     -     (1 - r + wpq + wpr + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(1 - r + wpr,1 + r + wqr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*wpr*(1 - p - r + wpr)*(1 + p - r + wpr)*(-r - wp + wpr)*
+     -     (-r + wp + wpr)*wqr*(1 - q + r + wqr)*(1 + q + r + wqr)*
+     -     (-s + wpr + wqr)*(s + wpr + wqr)*(1 - wpq + wpr + wqr)*
+     -     (1 + wpq + wpr + wqr)*(r - wq + wqr)*(r + wq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(1 - s - wq,1 + wq,s + wpr + wq,pp,qq,rr,pq,pr,qr)/
+     -   (8.*s*(1 - s - wpq)*(1 - s + wpq)*wpr*(1 - p - s - wq)*
+     -     (1 + p - s - wq)*(-s - wp - wq)*(-s + wp - wq)*wq*(1 - q + wq)*
+     -     (1 + q + wq)*(-r + s + wpr + wq)*(r + s + wpr + wq)*
+     -     (-s - wpr - wqr)*(-s - wpr + wqr)*(-1 + s + wpr + wq - wr)*
+     -     (1 + s + wpr + wq - wr)*(-1 + s + wpr + wq + wr)*
+     -     (1 + s + wpr + wq + wr)) - 
+     -  ztrc(1 + s - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*
+     -     (1 + p + s - wq)*(s - wp - wq)*(s + wp - wq)*(r + s - wpr - wq)*
+     -     (r + s + wpr - wq)*wq*(1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*
+     -     (-r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*
+     -     (1 + r + wr)) - ztrc(1 + s - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     (s - wp - wq)*(s + wp - wq)*wq*(1 - q + wq)*(1 + q + wq)*wqr*
+     -     (s - wpr + wqr)*(s + wpr + wqr)*(-r + wq + wqr)*(r + wq + wqr)*
+     -     (-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)) + 
+     -  ztrc(1 + s - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     (s - wp - wq)*(s + wp - wq)*wq*(1 - q + wq)*(1 + q + wq)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-1 + s - wpr - wq + wr)*(-1 + s + wpr - wq + wr)*
+     -     (-2 + 2*wr)) - ztrc(1 + s - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p + s - wq)*(1 + p + s - wq)*
+     -     (s - wp - wq)*(s + wp - wq)*wq*(1 - q + wq)*(1 + q + wq)*
+     -     (-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(1 + s - wpr - wq + wr)*(1 + s + wpr - wq + wr)*
+     -     (2 + 2*wr)) - ztrc(-wpq - wq,1 + wq,1 + wpq + wpr + wq,pp,qq,rr,pq,
+     -    pr,qr)/
+     -   (8.*(-1 - s - wpq)*(-1 + s - wpq)*wpq*wpr*(-p - wpq - wq)*
+     -     (p - wpq - wq)*(-1 - wp - wpq - wq)*(-1 + wp - wpq - wq)*wq*
+     -     (1 - q + wq)*(1 + q + wq)*(1 - r + wpq + wpr + wq)*
+     -     (1 + r + wpq + wpr + wq)*(-1 - wpq - wpr - wqr)*
+     -     (-1 - wpq - wpr + wqr)*(wpq + wpr + wq - wr)*
+     -     (2 + wpq + wpr + wq - wr)*(wpq + wpr + wq + wr)*
+     -     (2 + wpq + wpr + wq + wr)) - 
+     -  ztrc(wpq - wq,1 + wq,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*(-1 - wp + wpq - wq)*(-1 + wp + wpq - wq)*
+     -     (-1 + r + wpq - wpr - wq)*(-1 + r + wpq + wpr - wq)*wq*
+     -     (1 - q + wq)*(1 + q + wq)*(-r + wq - wqr)*(-r + wq + wqr)*
+     -     (-1 + r - wr)*(1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(wpq - wq,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*(p + wpq - wq)*
+     -     (-1 - wp + wpq - wq)*(-1 + wp + wpq - wq)*wq*(1 - q + wq)*
+     -     (1 + q + wq)*wqr*(-1 + wpq - wpr + wqr)*(-1 + wpq + wpr + wqr)*
+     -     (-r + wq + wqr)*(r + wq + wqr)*(-1 + wq + wqr - wr)*
+     -     (1 + wq + wqr - wr)*(-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) + 
+     -  ztrc(wpq - wq,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*(-1 - wp + wpq - wq)*(-1 + wp + wpq - wq)*wq*
+     -     (1 - q + wq)*(1 + q + wq)*(1 + wq - wqr - wr)*(1 + wq + wqr - wr)*
+     -     wr*(-1 - r + wr)*(-1 + r + wr)*(-2 + wpq - wpr - wq + wr)*
+     -     (-2 + wpq + wpr - wq + wr)*(-2 + 2*wr)) - 
+     -  ztrc(wpq - wq,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p + wpq - wq)*
+     -     (p + wpq - wq)*(-1 - wp + wpq - wq)*(-1 + wp + wpq - wq)*wq*
+     -     (1 - q + wq)*(1 + q + wq)*(-1 + wq - wqr - wr)*
+     -     (-1 + wq + wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (wpq - wpr - wq + wr)*(wpq + wpr - wq + wr)*(2 + 2*wr)) - 
+     -  ztrc(1 - r + s - wqr,1 + r + wqr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*s*(1 + s - wpq)*(1 + s + wpq)*(1 - p - r + s - wqr)*
+     -     (1 + p - r + s - wqr)*(-r + s - wp - wqr)*(-r + s + wp - wqr)*
+     -     (s - wpr - wqr)*(s + wpr - wqr)*wqr*(1 - q + r + wqr)*
+     -     (1 + q + r + wqr)*(r - wq + wqr)*(r + wq + wqr)*(-1 + r - wr)*
+     -     (1 + r - wr)*(-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(-r + wpq - wqr,1 + r + wqr,r,pp,qq,rr,pq,pr,qr)/
+     -   (8.*r*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-p - r + wpq - wqr)*
+     -     (p - r + wpq - wqr)*(-1 - r - wp + wpq - wqr)*
+     -     (-1 - r + wp + wpq - wqr)*(-1 + wpq - wpr - wqr)*
+     -     (-1 + wpq + wpr - wqr)*wqr*(1 - q + r + wqr)*(1 + q + r + wqr)*
+     -     (r - wq + wqr)*(r + wq + wqr)*(-1 + r - wr)*(1 + r - wr)*
+     -     (-1 + r + wr)*(1 + r + wr)) - 
+     -  ztrc(2 - q + wpr - wqr,q,-1 + q + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*q*wpr*(-1 + q - wq)*(-1 + q + wq)*(2 - p - q + wpr - wqr)*
+     -     (2 + p - q + wpr - wqr)*(-s + wpr - wqr)*(s + wpr - wqr)*
+     -     (1 - q - wp + wpr - wqr)*(1 - q + wp + wpr - wqr)*
+     -     (1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*wqr*(-1 + q - r + wqr)*
+     -     (-1 + q + r + wqr)*(-2 + q + wqr - wr)*(q + wqr - wr)*
+     -     (-2 + q + wqr + wr)*(q + wqr + wr)) - 
+     -  ztrc(1 + wpr - wq - wqr,1 + wq,wq + wqr,pp,qq,rr,pq,pr,qr)/
+     -   (8.*wpr*wq*(1 - q + wq)*(1 + q + wq)*(-s + wpr - wqr)*
+     -     (s + wpr - wqr)*(1 - wpq + wpr - wqr)*(1 + wpq + wpr - wqr)*
+     -     (1 - p + wpr - wq - wqr)*(1 + p + wpr - wq - wqr)*
+     -     (-wp + wpr - wq - wqr)*(wp + wpr - wq - wqr)*wqr*(-r + wq + wqr)*
+     -     (r + wq + wqr)*(-1 + wq + wqr - wr)*(1 + wq + wqr - wr)*
+     -     (-1 + wq + wqr + wr)*(1 + wq + wqr + wr)) - 
+     -  ztrc(-wpr - wr,2 + s + wpr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*wpr*(s + wpr - wqr)*
+     -     (s + wpr + wqr)*(-p - wpr - wr)*(p - wpr - wr)*
+     -     (-1 - wp - wpr - wr)*(-1 + wp - wpr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 - q + s + wpr + wr)*(2 + q + s + wpr + wr)*
+     -     (1 + s + wpr - wq + wr)*(1 + s + wpr + wq + wr)*(2 + 2*wr)) - 
+     -  ztrc(-wpr - wr,1 + wpq + wpr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*wpr*(-1 + wpq + wpr - wqr)*
+     -     (-1 + wpq + wpr + wqr)*(-p - wpr - wr)*(p - wpr - wr)*
+     -     (-1 - wp - wpr - wr)*(-1 + wp - wpr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(1 - q + wpq + wpr + wr)*(1 + q + wpq + wpr + wr)*
+     -     (wpq + wpr - wq + wr)*(wpq + wpr + wq + wr)*(2 + 2*wr)) + 
+     -  ztrc(2 - wpr - wr,s + wpr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*wpr*(s + wpr - wqr)*
+     -     (s + wpr + wqr)*(2 - p - wpr - wr)*(2 + p - wpr - wr)*
+     -     (1 - wp - wpr - wr)*(1 + wp - wpr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-q + s + wpr + wr)*(q + s + wpr + wr)*
+     -     (-1 + s + wpr - wq + wr)*(-1 + s + wpr + wq + wr)*(-2 + 2*wr)) + 
+     -  ztrc(2 - wpr - wr,-1 + wpq + wpr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*wpr*(-1 + wpq + wpr - wqr)*
+     -     (-1 + wpq + wpr + wqr)*(2 - p - wpr - wr)*(2 + p - wpr - wr)*
+     -     (1 - wp - wpr - wr)*(1 + wp - wpr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-1 - q + wpq + wpr + wr)*(-1 + q + wpq + wpr + wr)*
+     -     (-2 + wpq + wpr - wq + wr)*(-2 + wpq + wpr + wq + wr)*(-2 + 2*wr))\
+     -   - ztrc(wpr - wr,q,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wpr*(-1 + q - wq)*(-1 + q + wq)*(-p + wpr - wr)*
+     -     (p + wpr - wr)*(-2 + q - s + wpr - wr)*(-2 + q + s + wpr - wr)*
+     -     (-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*
+     -     (-1 + q - wpq + wpr - wr)*(-1 + q + wpq + wpr - wr)*
+     -     (-2 + q - wqr - wr)*(-2 + q + wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 + 2*wr)) - 
+     -  ztrc(wpr - wr,1 + wq,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq*(1 - q + wq)*(1 + q + wq)*(-p + wpr - wr)*(p + wpr - wr)*
+     -     (-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*(-1 - s + wpr + wq - wr)*
+     -     (-1 + s + wpr + wq - wr)*(-wpq + wpr + wq - wr)*
+     -     (wpq + wpr + wq - wr)*(-1 + wq - wqr - wr)*(-1 + wq + wqr - wr)*wr*
+     -     (1 - r + wr)*(1 + r + wr)*(2 + 2*wr)) - 
+     -  ztrc(wpr - wr,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wqr*(-s + wpr + wqr)*(s + wpr + wqr)*(1 - wpq + wpr + wqr)*
+     -     (1 + wpq + wpr + wqr)*(-p + wpr - wr)*(p + wpr - wr)*
+     -     (-1 - wp + wpr - wr)*(-1 + wp + wpr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 - q + wqr + wr)*(2 + q + wqr + wr)*
+     -     (1 - wq + wqr + wr)*(1 + wq + wqr + wr)*(2 + 2*wr)) + 
+     -  ztrc(2 + wpr - wr,q,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*q*wpr*(-1 + q - wq)*(-1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(q - s + wpr - wr)*(q + s + wpr - wr)*
+     -     (1 - wp + wpr - wr)*(1 + wp + wpr - wr)*(1 + q - wpq + wpr - wr)*
+     -     (1 + q + wpq + wpr - wr)*(q - wqr - wr)*(q + wqr - wr)*wr*
+     -     (-1 - r + wr)*(-1 + r + wr)*(-2 + 2*wr)) + 
+     -  ztrc(2 + wpr - wr,1 + wq,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wq*(1 - q + wq)*(1 + q + wq)*(2 - p + wpr - wr)*
+     -     (2 + p + wpr - wr)*(1 - wp + wpr - wr)*(1 + wp + wpr - wr)*
+     -     (1 - s + wpr + wq - wr)*(1 + s + wpr + wq - wr)*
+     -     (2 - wpq + wpr + wq - wr)*(2 + wpq + wpr + wq - wr)*
+     -     (1 + wq - wqr - wr)*(1 + wq + wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-2 + 2*wr)) + 
+     -  ztrc(2 + wpr - wr,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpr*wqr*(-s + wpr + wqr)*(s + wpr + wqr)*(1 - wpq + wpr + wqr)*
+     -     (1 + wpq + wpr + wqr)*(2 - p + wpr - wr)*(2 + p + wpr - wr)*
+     -     (1 - wp + wpr - wr)*(1 + wp + wpr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-q + wqr + wr)*(q + wqr + wr)*(-1 - wq + wqr + wr)*
+     -     (-1 + wq + wqr + wr)*(-2 + 2*wr)) - 
+     -  ztrc(s - wqr - wr,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(s - wpr - wqr)*(s + wpr - wqr)*
+     -     wqr*(-p + s - wqr - wr)*(p + s - wqr - wr)*
+     -     (-1 + s - wp - wqr - wr)*(-1 + s + wp - wqr - wr)*wr*(1 - r + wr)*
+     -     (1 + r + wr)*(2 - q + wqr + wr)*(2 + q + wqr + wr)*
+     -     (1 - wq + wqr + wr)*(1 + wq + wqr + wr)*(2 + 2*wr)) + 
+     -  ztrc(2 + s - wqr - wr,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*s*(1 + s - wpq)*(1 + s + wpq)*(s - wpr - wqr)*(s + wpr - wqr)*
+     -     wqr*(2 - p + s - wqr - wr)*(2 + p + s - wqr - wr)*
+     -     (1 + s - wp - wqr - wr)*(1 + s + wp - wqr - wr)*wr*(-1 - r + wr)*
+     -     (-1 + r + wr)*(-q + wqr + wr)*(q + wqr + wr)*(-1 - wq + wqr + wr)*
+     -     (-1 + wq + wqr + wr)*(-2 + 2*wr)) - 
+     -  ztrc(-1 + wpq - wqr - wr,2 + wqr + wr,1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-1 + wpq - wpr - wqr)*
+     -     (-1 + wpq + wpr - wqr)*wqr*(-1 - p + wpq - wqr - wr)*
+     -     (-1 + p + wpq - wqr - wr)*(-2 - wp + wpq - wqr - wr)*
+     -     (-2 + wp + wpq - wqr - wr)*wr*(1 - r + wr)*(1 + r + wr)*
+     -     (2 - q + wqr + wr)*(2 + q + wqr + wr)*(1 - wq + wqr + wr)*
+     -     (1 + wq + wqr + wr)*(2 + 2*wr)) + 
+     -  ztrc(1 + wpq - wqr - wr,wqr + wr,-1 + wr,pp,qq,rr,pq,pr,qr)/
+     -   (16.*wpq*(-1 - s + wpq)*(-1 + s + wpq)*(-1 + wpq - wpr - wqr)*
+     -     (-1 + wpq + wpr - wqr)*wqr*(1 - p + wpq - wqr - wr)*
+     -     (1 + p + wpq - wqr - wr)*(-wp + wpq - wqr - wr)*
+     -     (wp + wpq - wqr - wr)*wr*(-1 - r + wr)*(-1 + r + wr)*
+     -     (-q + wqr + wr)*(q + wqr + wr)*(-1 - wq + wqr + wr)*
+     -     (-1 + wq + wqr + wr)*(-2 + 2*wr))
+c
+c
+      fxns = ps*(inta+intb+intc)
+      return
+      end
+c
+c
+c
+c
+c
