@@ -1,0 +1,327 @@
+
+ INPUT PARAMETERS FOR VEGAS:  NDIM=  3  NCALL=        686.
+                              IT=    0  ITMX=   10
+                              ACC=-1.00    
+                              NPRN=  0  ALPH= 1.50
+                              MDS=  1   ND=  50
+                              (XL,XU)= (  0.00000     ,  1.00000     )
+                                       (  0.00000     ,  1.00000     )
+                                       ( -1.00000     ,  1.00000     )
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  1:   INTEGRAL =    0.9948136935E-01
+                     STD DEV  =0.6285E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9948136935E-01
+                        STD DEV  =0.6285E-02
+                        CHI**2 PER IT'N =0.2465E-27
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  2:   INTEGRAL =    0.9414929443E-01
+                     STD DEV  =0.4620E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9601957315E-01
+                        STD DEV  =0.3722E-02
+                        CHI**2 PER IT'N =0.4672    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  3:   INTEGRAL =    0.9504270790E-01
+                     STD DEV  =0.4528E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9562563454E-01
+                        STD DEV  =0.2875E-02
+                        CHI**2 PER IT'N =0.2475    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  4:   INTEGRAL =    0.9874884957E-01
+                     STD DEV  =0.5156E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9636659941E-01
+                        STD DEV  =0.2511E-02
+                        CHI**2 PER IT'N =0.2583    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  5:   INTEGRAL =    0.1007568076    
+                     STD DEV  =0.5385E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9715095799E-01
+                        STD DEV  =0.2276E-02
+                        CHI**2 PER IT'N =0.3302    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  6:   INTEGRAL =    0.9211611344E-01
+                     STD DEV  =0.4882E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9625195500E-01
+                        STD DEV  =0.2063E-02
+                        CHI**2 PER IT'N =0.4389    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  7:   INTEGRAL =    0.8591005490E-01
+                     STD DEV  =0.8108E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9562332106E-01
+                        STD DEV  =0.1999E-02
+                        CHI**2 PER IT'N =0.6204    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  8:   INTEGRAL =    0.1035858653    
+                     STD DEV  =0.5041E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9670530759E-01
+                        STD DEV  =0.1858E-02
+                        CHI**2 PER IT'N =0.8398    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  9:   INTEGRAL =    0.1025052585    
+                     STD DEV  =0.4993E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9741097370E-01
+                        STD DEV  =0.1742E-02
+                        CHI**2 PER IT'N =0.8829    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO. 10:   INTEGRAL =    0.9676597756E-01
+                     STD DEV  =0.5393E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9735006121E-01
+                        STD DEV  =0.1657E-02
+                        CHI**2 PER IT'N =0.7863    
+
+ INPUT PARAMETERS FOR VEGAS:  NDIM=  3  NCALL=       9826.
+                              IT=    0  ITMX=   10
+                              ACC=-1.00    
+                              NPRN=  0  ALPH= 1.50
+                              MDS=  1   ND=  50
+                              (XL,XU)= (  0.00000     ,  1.00000     )
+                                       (  0.00000     ,  1.00000     )
+                                       ( -1.00000     ,  1.00000     )
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  1:   INTEGRAL =    0.9728695022E-01
+                     STD DEV  =0.1293E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9728695022E-01
+                        STD DEV  =0.1293E-02
+                        CHI**2 PER IT'N = 0.000    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  2:   INTEGRAL =    0.9458979820E-01
+                     STD DEV  =0.1162E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9579486972E-01
+                        STD DEV  =0.8641E-03
+                        CHI**2 PER IT'N = 2.408    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  3:   INTEGRAL =    0.9322979492E-01
+                     STD DEV  =0.1632E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9523344236E-01
+                        STD DEV  =0.7637E-03
+                        CHI**2 PER IT'N = 2.169    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  4:   INTEGRAL =    0.9615277186E-01
+                     STD DEV  =0.7238E-03
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9571774481E-01
+                        STD DEV  =0.5253E-03
+                        CHI**2 PER IT'N = 1.700    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  5:   INTEGRAL =    0.9652954944E-01
+                     STD DEV  =0.7526E-03
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9598367994E-01
+                        STD DEV  =0.4308E-03
+                        CHI**2 PER IT'N = 1.471    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  6:   INTEGRAL =    0.9336955157E-01
+                     STD DEV  =0.2842E-02
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9592498638E-01
+                        STD DEV  =0.4259E-03
+                        CHI**2 PER IT'N = 1.342    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  7:   INTEGRAL =    0.9633930506E-01
+                     STD DEV  =0.9516E-03
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9599413549E-01
+                        STD DEV  =0.3887E-03
+                        CHI**2 PER IT'N = 1.145    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  8:   INTEGRAL =    0.9689909157E-01
+                     STD DEV  =0.7774E-03
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9617515431E-01
+                        STD DEV  =0.3477E-03
+                        CHI**2 PER IT'N = 1.136    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  9:   INTEGRAL =    0.9762749802E-01
+                     STD DEV  =0.7728E-03
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9641967205E-01
+                        STD DEV  =0.3171E-03
+                        CHI**2 PER IT'N = 1.361    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO. 10:   INTEGRAL =    0.9484154263E-01
+                     STD DEV  =0.9556E-03
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9626316906E-01
+                        STD DEV  =0.3009E-03
+                        CHI**2 PER IT'N = 1.483    
+
+ INPUT PARAMETERS FOR VEGAS:  NDIM=  3  NCALL=      93312.
+                              IT=    0  ITMX=   10
+                              ACC=-1.00    
+                              NPRN=  0  ALPH= 1.50
+                              MDS= -1   ND=  36
+                              (XL,XU)= (  0.00000     ,  1.00000     )
+                                       (  0.00000     ,  1.00000     )
+                                       ( -1.00000     ,  1.00000     )
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  1:   INTEGRAL =    0.9597467923E-01
+                     STD DEV  =0.2541E-03
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9597467923E-01
+                        STD DEV  =0.2541E-03
+                        CHI**2 PER IT'N =-.2524E-24
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  2:   INTEGRAL =    0.9622593120E-01
+                     STD DEV  =0.1364E-03
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9616971416E-01
+                        STD DEV  =0.1202E-03
+                        CHI**2 PER IT'N =0.7587    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  3:   INTEGRAL =    0.9640588660E-01
+                     STD DEV  =0.1140E-03
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9629409387E-01
+                        STD DEV  =0.8271E-04
+                        CHI**2 PER IT'N = 1.396    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  4:   INTEGRAL =    0.9604773178E-01
+                     STD DEV  =0.2298E-03
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9626583833E-01
+                        STD DEV  =0.7782E-04
+                        CHI**2 PER IT'N = 1.270    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  5:   INTEGRAL =    0.9635365811E-01
+                     STD DEV  =0.1681E-03
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9628133594E-01
+                        STD DEV  =0.7062E-04
+                        CHI**2 PER IT'N = 1.008    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  6:   INTEGRAL =    0.9635219512E-01
+                     STD DEV  =0.9692E-04
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9630590880E-01
+                        STD DEV  =0.5708E-04
+                        CHI**2 PER IT'N =0.8766    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  7:   INTEGRAL =    0.9632042554E-01
+                     STD DEV  =0.8848E-04
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9631017479E-01
+                        STD DEV  =0.4796E-04
+                        CHI**2 PER IT'N =0.7337    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  8:   INTEGRAL =    0.9633587057E-01
+                     STD DEV  =0.8603E-04
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9631626710E-01
+                        STD DEV  =0.4189E-04
+                        CHI**2 PER IT'N =0.6386    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO.  9:   INTEGRAL =    0.9647397559E-01
+                     STD DEV  =0.8987E-04
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9634441608E-01
+                        STD DEV  =0.3797E-04
+                        CHI**2 PER IT'N =0.8750    
+
+
+
+ INTEGRATION BY VEGAS
+
+ ITERATION NO. 10:   INTEGRAL =    0.9632934349E-01
+                     STD DEV  =0.8813E-04
+ ACCUMULATED RESULTS:   INTEGRAL =    0.9634205617E-01
+                        STD DEV  =0.3487E-04
+                        CHI**2 PER IT'N =0.7805    
